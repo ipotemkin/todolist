@@ -33,7 +33,7 @@ jobs:
     - name: docker login
       run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ipotemkin --password-stdin
     - name: docker push
-      run: docker push ipotemkin/todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+      run: docker push ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
 
 #  deploy:
 #    runs-on: ubuntu-latest
