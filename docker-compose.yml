@@ -36,6 +36,8 @@ services:
 #    image: todolist
     build:
       context: .
+    volumes:
+      - .:/code
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_USER: ${DB_USER}
@@ -58,6 +60,8 @@ services:
   migrations:
     build:
       context: .
+    volumes:
+      - .:/code
     environment:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_USER: ${DB_USER}
