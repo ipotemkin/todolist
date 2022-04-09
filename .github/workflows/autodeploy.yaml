@@ -19,7 +19,7 @@ jobs:
         pip install flake8
     - name: linting
       run: |
-        flake8 app --max-line-length=120
+        flake8 core todolist --max-line-length=120
 #    - name: run tests
 #      run: |
 #        coverage run --source=app -m pytest -v tests
