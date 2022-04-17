@@ -1,0 +1,63 @@
+version: "3.3"
+
+services:
+
+  front:
+    #    image: sermalenk/skypro-front:version_1
+    image: sermalenk/skypro-front:base
+    ports:
+      - '80:80'
+    depends_on:
+      - api
+
+  api:
+    image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+
+#    volumes:
+#      - ./data:/code/data  # to get to the database
+
+    environment:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+#      DB_HOST: postgres
+      DB_HOST: localhost
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: ${{ secrets.DEBUG }}
+    restart: always
+    depends_on:
+#      postgres:
+#        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    command: python3 manage.py runserver 0.0.0.0:8000
+
+  migrations:
+    image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    environment:
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+#      DB_HOST: postgres
+      DB_HOST: localhost
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: ${{ secrets.DEBUG }}
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+    restart: always
+    command: python manage.py migrate
+
+#  postgres:
+#    image: postgres:alpine
+#    environment:
+#      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+#      POSTGRES_USER: ${{ secrets.DB_USER }}
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U postgres"]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
+#    volumes:
+#      - ./postgres-data/db/:/var/lib/postgresql/data
+#    restart: always

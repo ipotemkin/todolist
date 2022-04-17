@@ -35,40 +35,48 @@ jobs:
     - name: docker push
       run: docker push ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
 
-#  deploy:
-#    runs-on: ubuntu-latest
-#    needs: build_and_push
-#    env:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+    env:
 #      PWD_HASH_SALT: ${{ secrets.PWD_HASH_SALT }}
 #      JWT_KEY: ${{ secrets.JWT_KEY }}
 ##      REDIS_HOST: redis
-#    steps:
-#      - name: clone code
-#        uses: actions/checkout@v2
-#      - name: render configs
-#        run: |
-#          mkdir deploy
-#          cat docker-compose-server.yaml | envsubst > deploy/docker-compose.yaml
-##          cat prod_config.py | env_subst > deploy/docker_config.py
-#      - name: clone config
-#        uses: appleboy/scp-action@master
-#        with:
-#          host: ${{ secrets.HOST }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+#      DB_HOST: postgres
+      DB_HOST: localhost
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: FALSE
+
+    steps:
+      - name: clone code
+        uses: actions/checkout@v2
+      - name: render configs
+        run: |
+          mkdir deploy
+          cat docker-compose-server.yaml | envsubst > deploy/docker-compose.yaml
+#          cat prod_config.py | env_subst > deploy/docker_config.py
+      - name: clone config
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
 #
 ##          TODO to change to token
-#          username: ${{ secrets.SSH_USERNAME }}
-#          password: ${{ secrets.SSH_PASSWORD }}
-#
-#          source: "deploy/docker-compose.yaml"
-#          target: movies-api
-#          strip_components: 1
-#      - name: run docker-compose
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.HOST }}
-#          username: ${{ secrets.SSH_USERNAME }}
-#          password: ${{ secrets.SSH_PASSWORD }}
-#          script: |
-#            cd movies-api
-#            docker-compose down
-#            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker-compose up -d
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+
+          source: "deploy/docker-compose.yaml"
+          target: todolist
+          strip_components: 1
+      - name: run docker-compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd todolist
+            docker-compose down
+            echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker-compose up -d
