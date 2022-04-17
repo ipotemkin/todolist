@@ -6,7 +6,7 @@ services:
     #    image: sermalenk/skypro-front:version_1
     image: sermalenk/skypro-front:base
     ports:
-      - '80:80'
+      - '8002:80'
     depends_on:
       - api
 
