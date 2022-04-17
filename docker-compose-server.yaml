@@ -18,6 +18,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
       SECRET_KEY: ${SECRET_KEY}
+      DEBUG: 'TRUE'
     restart: always
     depends_on:
       postgres:
