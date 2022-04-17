@@ -25,9 +25,11 @@ services:
 #      migrations:
 #        condition: service_completed_successfully
     command: >
-      sh -c "python3 manage.py makemigrations &&
+      sh -c "python3 manage.py makemigrations core &&
             python3 manage.py migrate &&
             python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code/
 
 #  migrations:
 #    image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
