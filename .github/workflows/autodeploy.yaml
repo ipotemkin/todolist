@@ -47,7 +47,7 @@ jobs:
 #      DB_HOST: ${{ secrets.HOST }}
       DB_HOST: 'localhost'
 #      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DEBUG: FALSE
+      DEBUG: 'FALSE'
 
     steps:
       - name: clone code
