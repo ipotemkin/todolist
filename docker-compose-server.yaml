@@ -20,6 +20,8 @@ services:
 #      SECRET_KEY: 'django-insecure-qsib7!68w^zbce6)$jf3hyyul0f*j1do91$4gx)v@#bbcs+#7g'
 #      DEBUG: ${DEBUG}
     restart: always
+    ports:
+      - '5432:5432'
     depends_on:
       - migrations
 #          condition: service_completed_successfully
@@ -35,5 +37,7 @@ services:
       DB_HOST: ${DB_HOST}
 #      SECRET_KEY: 'django-insecure-qsib7!68w^zbce6)$jf3hyyul0f*j1do91$4gx)v@#bbcs+#7g'
 #      DEBUG: ${DEBUG}
+    ports:
+      - '5432:5432'
     restart: always
     command: python manage.py migrate
