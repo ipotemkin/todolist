@@ -18,7 +18,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
 #      SECRET_KEY: 'django-insecure-qsib7!68w^zbce6)$jf3hyyul0f*j1do91$4gx)v@#bbcs+#7g'
-      DEBUG: ${DEBUG}
+#      DEBUG: ${DEBUG}
     restart: always
     depends_on:
       - migrations
@@ -34,6 +34,6 @@ services:
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
 #      SECRET_KEY: 'django-insecure-qsib7!68w^zbce6)$jf3hyyul0f*j1do91$4gx)v@#bbcs+#7g'
-      DEBUG: ${DEBUG}
+#      DEBUG: ${DEBUG}
     restart: always
     command: python manage.py migrate
