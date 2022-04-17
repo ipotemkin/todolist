@@ -45,8 +45,6 @@ services:
       DB_HOST: postgres
       SECRET_KEY: ${SECRET_KEY}
       DEBUG: ${DEBUG}
-#    ports:
-#      - "8080:8000"
     depends_on:
       postgres:
         condition: service_healthy
