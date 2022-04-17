@@ -19,6 +19,7 @@ services:
       DB_HOST: ${DB_HOST}
       SECRET_KEY: ${SECRET_KEY}
 #      DEBUG: ${DEBUG}
+#      DEBUG: ${DEBUG}
     restart: always
 #    ports:
 #      - '5432:5432'
