@@ -44,7 +44,8 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
 #      DB_HOST: postgres
 #      DB_HOST: '127.0.0.1'
-      DB_HOST: ${{ secrets.HOST }}
+#      DB_HOST: ${{ secrets.HOST }}
+      DB_HOST: 'localhost'
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DEBUG: FALSE
 
@@ -76,5 +77,5 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd todolist
-            docker-compose down
+            echo ${{ secrets.SSH_PASSWORD }} | sudo docker-compose down
             echo ${{ secrets.SSH_PASSWORD }} | sudo -S docker-compose up -d
