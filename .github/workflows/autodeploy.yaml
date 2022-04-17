@@ -46,7 +46,7 @@ jobs:
       DB_HOST: '127.0.0.1'
 #      DB_HOST: ${{ secrets.HOST }}
 #      DB_HOST: 'localhost'
-      SECRET_KEY: ${{ 'secrets.SECRET_KEY }}
+      SECRET_KEY: ${{ 'secrets.SECRET_KEY' }}
       DEBUG: 'FALSE'
 
     steps:
