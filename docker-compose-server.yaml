@@ -20,8 +20,6 @@ services:
       SECRET_KEY: ${SECRET_KEY}
 #      DEBUG: ${DEBUG}
     restart: always
-#    ports:
-#      - '5432:5432'
     depends_on:
       - migrations
 #          condition: service_completed_successfully
@@ -37,7 +35,5 @@ services:
       DB_HOST: ${DB_HOST}
       SECRET_KEY: ${SECRET_KEY}
 #      DEBUG: ${DEBUG}
-#    ports:
-#      - '5432:5432'
     restart: always
     command: python manage.py migrate
