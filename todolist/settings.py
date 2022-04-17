@@ -40,6 +40,7 @@ CSRF_TRUSTED_ORIGINS = (
     'http://127.0.0.1:8080',
     'http://localhost:8002',
     'http://127.0.0.1:8002',
+    'http://0.0.0.0:8002',
 )
 
 # CORS_ORIGIN_WHITELIST = (
