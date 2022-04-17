@@ -12,7 +12,8 @@ services:
 
   api:
     image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-
+    env_file:
+      - .env
     restart: always
     depends_on:
       - migrations
@@ -22,5 +23,7 @@ services:
 
   migrations:
     image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    env_file:
+      - .env
     restart: always
     command: python manage.py migrate
