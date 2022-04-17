@@ -20,9 +20,10 @@ services:
       SECRET_KEY: ${SECRET_KEY}
     restart: always
     depends_on:
-      - migrations
-#          condition: service_completed_successfully
-
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
     command: python3 manage.py runserver 0.0.0.0:8000
 
   migrations:
@@ -35,3 +36,16 @@ services:
       SECRET_KEY: ${SECRET_KEY}
     restart: always
     command: python manage.py migrate
+
+  postgres:
+    image: postgres:12.4-alpine
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./postgres-data/db/:/var/lib/postgresql/data
