@@ -12,6 +12,13 @@ services:
 
   api:
     image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
     restart: always
     depends_on:
       - migrations
@@ -21,5 +28,12 @@ services:
 
   migrations:
     image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: ${DEBUG}
     restart: always
     command: python manage.py migrate
