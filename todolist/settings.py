@@ -41,11 +41,12 @@ CSRF_TRUSTED_ORIGINS = (
     'http://localhost:8002',
     'http://127.0.0.1:8002',
     'http://0.0.0.0:8002',
+    'http://51.250.72.80:8002',
 )
 
-# CORS_ORIGIN_WHITELIST = (
-#     "http://0.0.0.0:8080",
-# )
+CORS_ORIGIN_WHITELIST = (
+    "http://0.0.0.0:8002",
+)
 
 # Application definition
 
