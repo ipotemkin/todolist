@@ -14,7 +14,7 @@ class BoardAdmin(UserAdmin):
     # exclude = ('password',)
 
     readonly_fields = ('date_joined', 'last_login')
-    list_display = ('username', 'email', 'first_name', 'last_name')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'last_login')
     list_filter = ('is_staff', 'is_active', 'is_superuser')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     fieldsets = (
