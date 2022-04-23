@@ -23,30 +23,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-#      migrations:
-#        condition: service_completed_successfully
     command: >
       sh -c "python3 manage.py migrate &&
             python3 manage.py runserver 0.0.0.0:8000"
-
-#      sh -c "python3 manage.py makemigrations core &&
-#            python3 manage.py migrate &&
-#            python3 manage.py runserver 0.0.0.0:8000"
-
-
-#    volumes:
-#      - .:/code/
-
-#  migrations:
-#    image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-#    environment:
-#      DB_PASSWORD: ${DB_PASSWORD}
-#      DB_USER: ${DB_USER}
-#      DB_NAME: ${DB_NAME}
-#      DB_HOST: ${DB_HOST}
-#      SECRET_KEY: ${SECRET_KEY}
-#    restart: always
-#    command: python manage.py migrate
 
   postgres:
     image: postgres:12.4-alpine
