@@ -28,7 +28,7 @@ class SignupView(CreateAPIView):
 
         # to log in the app; the front doesn't do it! ((
         user = User.objects.get(username=ret.data['username'])
-        login(request, user=user)
+        login(request, user=user, backend='django.contrib.auth.backends.ModelBackend')
 
         return ret
 
@@ -41,7 +41,7 @@ class LoginView(GenericAPIView):
         user_login.is_valid(raise_exception=True)
         username = user_login.validated_data['username']
         user = User.objects.get(username=username)
-        login(request, user=user)
+        login(request, user=user, backend='django.contrib.auth.backends.ModelBackend')
         user_serializer = UserSerializer(instance=user)
         return Response(user_serializer.data)
 
@@ -69,5 +69,9 @@ class UpdatePasswordView(UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         ret = super().update(request, *args, **kwargs)
-        login(request, user=request.user)  # to keep the current user logged in
+        login(
+            request,
+            user=request.user,
+            backend='django.contrib.auth.backends.ModelBackend'
+        )  # to keep the current user logged in
         return ret

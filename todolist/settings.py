@@ -98,8 +98,8 @@ WSGI_APPLICATION = 'todolist.wsgi.application'
 # SOCIAL_AUTH_STORAGE = 'social_django_mongoengine.models.DjangoStorage'
 
 AUTHENTICATION_BACKENDS = (
+    'social_core.backends.vk.VKOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-    # 'social_core.backends.vk.VKOAuth2',
 )
 
 # Social auth
