@@ -57,9 +57,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'social_django',
-    "social_django_mongoengine"
+    # "social_django_mongoengine",
     "corsheaders",
-    'core'
+    # 'todolist',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'social_django.middleware.SocialAuthExceptionMiddleware'
+    'social_django.middleware.SocialAuthExceptionMiddleware'
 ]
 
 ROOT_URLCONF = 'todolist.urls'
@@ -94,16 +95,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'todolist.wsgi.application'
 
-SOCIAL_AUTH_STORAGE = 'social_django_mongoengine.models.DjangoStorage'
+# SOCIAL_AUTH_STORAGE = 'social_django_mongoengine.models.DjangoStorage'
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.vk.VKOAuth2',
-    'django.contribauth.backends.ModelBackend',
+    # 'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # Social auth
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
-SOCIAL_AUTH_URL_NAMESPACE = 'social'
+# SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
