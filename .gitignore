@@ -152,4 +152,4 @@ cython_debug/
 .idea/
 postgres-data/db/
 *backup*
-docker-compose.yml
+#docker-compose.yml

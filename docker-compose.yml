@@ -1,0 +1,67 @@
+version: "3.9"
+
+x-common-variables: &common-variables
+  DB_PASSWORD: ${DB_PASSWORD}
+  DB_USER: ${DB_USER}
+  DB_NAME: ${DB_NAME}
+  DB_HOST: postgres
+  SECRET_KEY: ${SECRET_KEY}
+  DEBUG: ${DEBUG}
+
+services:
+
+#  fixtures:
+#    build:
+#      context: .
+#    environment:
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+#      POSTGRES_HOST: postgres
+#    depends_on:
+#      migrations:
+#        condition: service_completed_successfully
+#    command: bash load_fixtures.sh
+
+  front:
+#    image: sermalenk/skypro-front:version_1
+#    image: sermalenk/skypro-front:base
+    image: sermalenk/skypro-front:lesson_35
+#    image: sermalenk/skypro-front:lesson_36
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+    volumes:
+      - .:/code
+    environment: *common-variables
+#      <<: *common-variables
+#      DB_HOST: postgres
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    command: >
+      sh -c "python manage.py migrate
+            python3 manage.py runserver 0.0.0.0:8000"
+#    volumes:
+#      - api_media:/opt/app/media
+
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./postgres-data/db/:/var/lib/postgresql/data
+
+#volumes:
+#  api_media:
