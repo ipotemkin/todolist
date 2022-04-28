@@ -9,7 +9,7 @@ class GoalCategoryAdmin(admin.ModelAdmin):
 
 
 class GoalAdmin(admin.ModelAdmin):
-    list_display = ("title", "description", "due_date", "created", "updated")
+    list_display = ("category", "title", "description", "due_date", "created", "updated")
     search_fields = ("title", "description")
 
 

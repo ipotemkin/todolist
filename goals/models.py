@@ -42,6 +42,8 @@ class GoalCategory(models.Model):
 class Goal(models.Model):
     title = models.CharField(verbose_name="Название", max_length=255)
     description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
+    # user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
+    is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
     category = models.ForeignKey(GoalCategory, verbose_name="Категория", on_delete=models.PROTECT)
     status = models.PositiveSmallIntegerField(
         verbose_name="Статус",
