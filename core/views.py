@@ -8,7 +8,7 @@ from rest_framework.generics import (
     UpdateAPIView
 )
 from rest_framework.response import Response
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+# from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
 from core.models import User
 from core.serializers import (

@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from rest_framework import permissions
-from rest_framework.schemas import get_schema_view, openapi
+# from rest_framework import permissions
+# from rest_framework.schemas import get_schema_view, openapi
 
 # schema_view = get_schema_view(
 #     # openapi.Info(

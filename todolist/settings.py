@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CORS_ALLOW_CREDENTIALS = True
+
 CSRF_TRUSTED_ORIGINS = (
     'http://localhost:8080',
     'http://127.0.0.1:8080',
@@ -180,6 +182,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# to modify the system user class
 AUTH_USER_MODEL = 'core.User'
 
+# for 'social_django' to work without a trailing slash
 SOCIAL_AUTH_TRAILING_SLASH = False
+
+APPEND_SLASH = False
+
+# SOCIAL_AUTH_USER_MODEL = 'core.User'
+
+# SOCIAL_AUTH_SANITIZE_REDIRECTS = False
