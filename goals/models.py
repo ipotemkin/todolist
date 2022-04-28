@@ -29,6 +29,9 @@ class GoalCategory(models.Model):
     created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
 
+    def __str__(self):
+        return self.title
+
     # def save(self, *args, **kwargs):
     #     if not self.id:  # Когда объект только создается, у него еще нет id
     #         self.created = timezone.now()  # проставляем дату создания
@@ -36,12 +39,24 @@ class GoalCategory(models.Model):
     #     return super().save(*args, **kwargs)
 
 
-# class Goal(models.Model):
-#     title = models.CharField(verbose_name="Название", max_length=255)
-#     description = models.CharField(verbose_name="Описание", max_length=255)
-#     category = models.ForeignKey(GoalCategory, verbose_name="Категория", on_delete=models.PROTECT)
-#     # status =
-#     # priority =
-#     deadline = models.DateTimeField(verbose_name="Дедлайн")
-#     created = models.DateTimeField(verbose_name="Дата создания")
-#     updated = models.DateTimeField(verbose_name="Дата последнего обновления")
+class Goal(models.Model):
+    title = models.CharField(verbose_name="Название", max_length=255)
+    description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
+    category = models.ForeignKey(GoalCategory, verbose_name="Категория", on_delete=models.PROTECT)
+    status = models.PositiveSmallIntegerField(
+        verbose_name="Статус",
+        choices=Status.choices,
+        default=Status.to_do
+    )
+    priority = models.PositiveSmallIntegerField(
+        verbose_name="Приоритет",
+        choices=Priority.choices,
+        default=Priority.medium
+    )
+    due_date = models.DateField(verbose_name="Дата дедлайна")
+    created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
+    updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+
+    class Meta:
+        verbose_name = "Цель"
+        verbose_name_plural = "Цели"
