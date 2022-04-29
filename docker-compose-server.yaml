@@ -20,6 +20,8 @@ services:
       DB_HOST: ${DB_HOST}
       SECRET_KEY: ${SECRET_KEY}
       DEBUG: 'TRUE'
+      SOCIAL_AUTH_VK_OAUTH2_KEY: ${ SOCIAL_AUTH_VK_OAUTH2_KEY }
+      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${ SOCIAL_AUTH_VK_OAUTH2_SECRET }
     restart: always
     depends_on:
       postgres:
