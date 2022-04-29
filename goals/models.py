@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils import timezone
+# from django.utils import timezone
 
 from core.models import User
 
@@ -18,7 +18,15 @@ class Priority(models.IntegerChoices):
     critical = 4, "Критический"
 
 
-class GoalCategory(models.Model):
+class DatesModelMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
+    updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+
+
+class GoalCategory(DatesModelMixin):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
@@ -26,8 +34,8 @@ class GoalCategory(models.Model):
     title = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
-    created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+    # created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
+    # updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
 
     def __str__(self):
         return self.title
@@ -39,7 +47,7 @@ class GoalCategory(models.Model):
     #     return super().save(*args, **kwargs)
 
 
-class Goal(models.Model):
+class Goal(DatesModelMixin):
     title = models.CharField(verbose_name="Название", max_length=255)
     description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
     # user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
@@ -56,8 +64,8 @@ class Goal(models.Model):
         default=Priority.medium
     )
     due_date = models.DateField(verbose_name="Дата дедлайна")
-    created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+    # created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
+    # updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
 
     class Meta:
         verbose_name = "Цель"
@@ -67,15 +75,15 @@ class Goal(models.Model):
         return self.title
 
 
-class Comment(models.Model):
+class Comment(DatesModelMixin):
     class Meta:
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
 
     goal = models.ForeignKey(Goal, verbose_name="Цель", on_delete=models.CASCADE)
     text = models.TextField(verbose_name="Текст комментария")
-    created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+    # created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
+    # updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
 
     def __str__(self):
         return self.text[:30]
