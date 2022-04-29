@@ -26,15 +26,6 @@ class GoalSerializer(serializers.ModelSerializer):
     # category = GoalCategorySerializer()
     # category_id = serializers.IntegerField(source='category.id')
 
-    # def validate_category(self, value):
-    #     if value.is_deleted:
-    #         raise serializers.ValidationError("not allowed in deleted category")
-    #
-    #     if value.user != self.context["request"].user:
-    #         raise serializers.ValidationError("not owner of category")
-    #
-    #     return value
-
     class Meta:
         model = Goal
         fields = "__all__"
@@ -51,20 +42,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
     user = UserSerializer(source="goal.category.user", read_only=True)
-    # print(user)
-    # category = GoalCategorySerializer()
-    # category_id = serializers.IntegerField(source='category.id')
-
-    # def validate_category(self, value):
-    #     if value.is_deleted:
-    #         raise serializers.ValidationError("not allowed in deleted category")
-    #
-    #     if value.user != self.context["request"].user:
-    #         raise serializers.ValidationError("not owner of category")
-    #
-    #     return value
 
     class Meta:
         model = Comment

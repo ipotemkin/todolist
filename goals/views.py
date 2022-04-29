@@ -122,11 +122,3 @@ class CommentView(RetrieveUpdateDestroyAPIView):
     model = Comment
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    # def get_queryset(self):
-    #     return Comment.objects.filter(category__user=self.request.user)
-
-    # def perform_destroy(self, instance):
-    #     instance.is_deleted = True
-    #     instance.save()
-    #     return instance

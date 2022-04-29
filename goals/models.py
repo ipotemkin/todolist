@@ -1,5 +1,4 @@
 from django.db import models
-# from django.utils import timezone
 
 from core.models import User
 
@@ -34,20 +33,16 @@ class GoalCategory(DatesModelMixin):
     title = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
-    # created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    # updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
 
     def __str__(self):
         return self.title
 
-    # def save(self, *args, **kwargs):
-    #     if not self.id:  # Когда объект только создается, у него еще нет id
-    #         self.created = timezone.now()  # проставляем дату создания
-    #     self.updated = timezone.now()  # проставляем дату обновления
-    #     return super().save(*args, **kwargs)
-
 
 class Goal(DatesModelMixin):
+    class Meta:
+        verbose_name = "Цель"
+        verbose_name_plural = "Цели"
+
     title = models.CharField(verbose_name="Название", max_length=255)
     description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
     # user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
@@ -64,12 +59,6 @@ class Goal(DatesModelMixin):
         default=Priority.medium
     )
     due_date = models.DateField(verbose_name="Дата дедлайна")
-    # created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    # updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
-
-    class Meta:
-        verbose_name = "Цель"
-        verbose_name_plural = "Цели"
 
     def __str__(self):
         return self.title
@@ -82,8 +71,6 @@ class Comment(DatesModelMixin):
 
     goal = models.ForeignKey(Goal, verbose_name="Цель", on_delete=models.CASCADE)
     text = models.TextField(verbose_name="Текст комментария")
-    # created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    # updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
 
     def __str__(self):
         return self.text[:30]
