@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'social_django',
     # "social_django_mongoengine",
     "corsheaders",
+    "django_filters",
     # 'todolist',
     'core',
     'goals',

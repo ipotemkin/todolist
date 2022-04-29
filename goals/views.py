@@ -1,7 +1,9 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework import permissions, filters
 from rest_framework.pagination import LimitOffsetPagination
 
+from goals.filters import GoalDataFilter
 from goals.models import GoalCategory, Goal
 from goals.serializers import GoalCategoryCreateSerializer, GoalCategorySerializer, GoalSerializer, GoalCreateSerializer
 
@@ -53,7 +55,9 @@ class GoalListView(ListAPIView):
     filter_backends = [
         filters.OrderingFilter,
         filters.SearchFilter,
+        DjangoFilterBackend,
     ]
+    filterset_class = GoalDataFilter
     ordering_fields = ["title", "created"]
     ordering = ["title"]
     search_fields = ["title", "description"]
@@ -61,7 +65,6 @@ class GoalListView(ListAPIView):
     def get_queryset(self):
         return Goal.objects.filter(
             category__user=self.request.user,
-            # category=
             is_deleted=False
         )
 
