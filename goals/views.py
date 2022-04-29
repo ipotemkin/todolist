@@ -4,8 +4,9 @@ from rest_framework import permissions, filters
 from rest_framework.pagination import LimitOffsetPagination
 
 from goals.filters import GoalDataFilter
-from goals.models import GoalCategory, Goal
-from goals.serializers import GoalCategoryCreateSerializer, GoalCategorySerializer, GoalSerializer, GoalCreateSerializer
+from goals.models import GoalCategory, Goal, Comment
+from goals.serializers import GoalCategoryCreateSerializer, GoalCategorySerializer, GoalSerializer, \
+    GoalCreateSerializer, CommentSerializer, CommentCreateSerializer
 
 
 class GoalCategoryCreateView(CreateAPIView):
@@ -87,3 +88,45 @@ class GoalView(RetrieveUpdateDestroyAPIView):
         instance.is_deleted = True
         instance.save()
         return instance
+
+
+class CommentListView(ListAPIView):
+    # queryset = Comment.objects.all()
+    model = Comment
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CommentSerializer
+    pagination_class = LimitOffsetPagination
+    filter_backends = [
+        filters.OrderingFilter,
+        # filters.SearchFilter,
+        DjangoFilterBackend,
+    ]
+    # filterset_class = GoalDataFilter
+    ordering_fields = ["updated", "created"]
+    ordering = ["-created", "updated"]
+    # search_fields = ["=goal_id"]
+    filterset_fields = ["goal"]
+
+    def get_queryset(self):
+        return Comment.objects.filter()
+
+
+class CommentCreateView(CreateAPIView):
+    model = Comment
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = CommentCreateSerializer
+
+
+class CommentView(RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    model = Comment
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    # def get_queryset(self):
+    #     return Comment.objects.filter(category__user=self.request.user)
+
+    # def perform_destroy(self, instance):
+    #     instance.is_deleted = True
+    #     instance.save()
+    #     return instance
