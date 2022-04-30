@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate  # , logout
+from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -49,13 +49,13 @@ class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(write_only=True)
     password = serializers.CharField(write_only=True)
 
-    def validate(self, attrs: dict) -> dict:
+    def validate(self, attrs: dict) -> User:
         username = attrs.get('username')
         password = attrs.get('password')
         user = authenticate(username=username, password=password)
         if not user:
             raise ValidationError('username or password is incorrect')
-        return attrs
+        return user
 
     def update(self, instance, validated_data):
         raise NotImplemented
