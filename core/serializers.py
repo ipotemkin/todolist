@@ -6,13 +6,24 @@ from rest_framework.exceptions import ValidationError
 from core.models import User
 
 
-class CreateUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, validators=[validate_password])
-    password_repeat = serializers.CharField(write_only=True)
-
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         read_only_fields = ('id',)
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+        )
+
+
+class CreateUserSerializer(UserSerializer):
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+    password_repeat = serializers.CharField(write_only=True)
+
+    class Meta(UserSerializer.Meta):
         fields = (
             'id',
             'username',
@@ -46,24 +57,11 @@ class LoginSerializer(serializers.Serializer):
             raise ValidationError('username or password is incorrect')
         return attrs
 
-    # def update(self, instance, validated_data):
-    #     pass
-    #
-    # def create(self, validated_data):
-    #     pass
+    def update(self, instance, validated_data):
+        raise NotImplemented
 
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        read_only_fields = ('id',)
-        fields = (
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-        )
+    def create(self, validated_data):
+        raise NotImplemented
 
 
 class UpdatePasswordSerializer(serializers.ModelSerializer):
