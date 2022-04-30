@@ -8,7 +8,7 @@ from rest_framework.generics import (
     UpdateAPIView
 )
 from rest_framework.response import Response
-# from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
 from core.models import User
 from core.serializers import (
@@ -65,9 +65,11 @@ class ProfileView(RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
 
+    # @csrf_exempt
     def get_object(self) -> User:
         return self.request.user
 
+    # @csrf_exempt
     def delete(self, request, *args, **kwargs) -> Response:
         logout(request)
         return Response({})
@@ -84,9 +86,11 @@ class UpdatePasswordView(UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UpdatePasswordSerializer
 
+    # @csrf_exempt
     def get_object(self) -> User:
         return self.request.user
 
+    # @csrf_exempt
     def update(self, request, *args, **kwargs) -> Response:
         ret = super().update(request, *args, **kwargs)
 
