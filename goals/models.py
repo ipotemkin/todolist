@@ -3,20 +3,6 @@ from django.db import models
 from core.models import User
 
 
-class Status(models.IntegerChoices):
-    to_do = 1, "К выполнению"
-    in_progress = 2, "В процессе"
-    done = 3, "Выполнено"
-    archived = 4, "Архив"
-
-
-class Priority(models.IntegerChoices):
-    low = 1, "Низкий"
-    medium = 2, "Средний"
-    high = 3, "Высокий"
-    critical = 4, "Критический"
-
-
 class DatesModelMixin(models.Model):
     class Meta:
         abstract = True
@@ -42,6 +28,18 @@ class Goal(DatesModelMixin):
     class Meta:
         verbose_name = "Цель"
         verbose_name_plural = "Цели"
+
+    class Status(models.IntegerChoices):
+        to_do = 1, "К выполнению"
+        in_progress = 2, "В процессе"
+        done = 3, "Выполнено"
+        archived = 4, "Архив"
+
+    class Priority(models.IntegerChoices):
+        low = 1, "Низкий"
+        medium = 2, "Средний"
+        high = 3, "Высокий"
+        critical = 4, "Критический"
 
     title = models.CharField(verbose_name="Название", max_length=255)
     description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
