@@ -6,7 +6,7 @@ from goals.models import GoalCategory, Goal, Comment, Board, BoardParticipant
 @admin.register(GoalCategory)
 class GoalCategoryAdmin(admin.ModelAdmin):
     list_display = ("title", "board", "user", "created", "updated")
-    search_fields = ("title", "user")
+    search_fields = ("title", "user__username", "board__title")
     list_filter = ('is_deleted',)
     readonly_fields = ("created", "updated")
 
@@ -14,14 +14,14 @@ class GoalCategoryAdmin(admin.ModelAdmin):
 @admin.register(Goal)
 class GoalAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "description", "due_date", "created", "updated")
-    search_fields = ("title", "description")
+    search_fields = ("title", "description", "category__title")
     list_filter = ('is_deleted',)
     readonly_fields = ("created", "updated")
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("goal", "text", "created", "updated")
+    list_display = ("text", "goal", "created", "updated")
     search_fields = ("text", "goal__title")
     readonly_fields = ("created", "updated")
 
@@ -36,7 +36,7 @@ class BoardAdmin(admin.ModelAdmin):
 
 @admin.register(BoardParticipant)
 class BoardParticipantAdmin(admin.ModelAdmin):
-    list_display = ("board", "user", "role", "created", "updated")
-    search_fields = ("board",)
+    list_display = ("user", "board", "role", "created", "updated")
+    search_fields = ("user__username", "board__title")
     # list_filter = ('is_deleted',)
     readonly_fields = ("created", "updated")
