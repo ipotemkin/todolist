@@ -194,3 +194,12 @@ APPEND_SLASH = False
 # SOCIAL_AUTH_USER_MODEL = 'core.User'
 
 # SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Basic': {
+            'type': 'basic'
+      },
+   }
+}

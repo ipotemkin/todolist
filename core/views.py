@@ -3,7 +3,7 @@ from rest_framework.generics import (
     CreateAPIView,
     GenericAPIView,
     RetrieveUpdateDestroyAPIView,
-    UpdateAPIView
+    UpdateAPIView, DestroyAPIView, RetrieveAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -71,6 +71,14 @@ class ProfileView(RetrieveUpdateDestroyAPIView, UserMixin):
     def delete(self, request, *args, **kwargs) -> Response:
         logout(request)
         return Response({})
+
+
+class LogoutView(RetrieveAPIView, UserMixin):
+    serializer_class = UserSerializer
+
+    def retrieve(self, request, *args, **kwargs) -> Response:
+        logout(request)
+        return Response({"message": "user logged out"}, status=200)
 
 
 class UpdatePasswordView(UpdateAPIView, UserMixin):

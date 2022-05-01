@@ -19,6 +19,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 
+from core.views import LogoutView, LoginView
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Todolist API",
@@ -31,12 +33,18 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
     path('oauth/', include('social_django.urls', namespace='social')),
     path('core/', include('core.urls')),
     path('goals/', include('goals.urls')),
+
     re_path(
         r'^swagger/$',
         schema_view.with_ui('swagger', cache_timeout=0),
         name='schema-swagger-ui',
     ),
+
+    # to login/logout via swagger
+    path('accounts/login/', LoginView.as_view()),
+    path('accounts/logout/', LogoutView.as_view()),
 ]
