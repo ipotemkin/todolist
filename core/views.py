@@ -8,12 +8,14 @@ from rest_framework.generics import (
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
+from drf_yasg.utils import swagger_auto_schema
+
 from core.models import User
 from core.serializers import (
     CreateUserSerializer,
     LoginSerializer,
     UserSerializer,
-    UpdatePasswordSerializer
+    UpdatePasswordSerializer, LoginResponseSerializer
 )
 
 
@@ -43,6 +45,7 @@ class SignupView(CreateAPIView):
 class LoginView(GenericAPIView):
     serializer_class = LoginSerializer
 
+    @swagger_auto_schema(responses={200: LoginResponseSerializer()})
     def post(self, request, *args, **kwargs) -> Response:
         user_login = self.get_serializer(data=request.data)
         user_login.is_valid(raise_exception=True)

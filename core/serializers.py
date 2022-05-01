@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 
 from core.models import User
 
@@ -45,23 +45,24 @@ class CreateUserSerializer(UserSerializer):
         return User.objects.create_user(**validated_data)
 
 
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
-
-    def validate(self, attrs: dict) -> User:
-        username = attrs.get('username')
-        password = attrs.get('password')
-        user = authenticate(username=username, password=password)
-        if not user:
-            raise ValidationError('username or password is incorrect')
-        return user
+# to correctly show a response model in swagger
+class LoginResponseSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
 
     def update(self, instance, validated_data):
         raise NotImplemented
 
     def create(self, validated_data):
         raise NotImplemented
+
+
+class LoginSerializer(LoginResponseSerializer):
+    password = serializers.CharField(required=True, write_only=True)
+
+    def validate(self, attrs: dict) -> User:
+        if user := authenticate(**attrs):
+            return user
+        raise AuthenticationFailed
 
 
 class UpdatePasswordSerializer(serializers.ModelSerializer):

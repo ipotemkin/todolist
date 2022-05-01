@@ -201,5 +201,10 @@ SWAGGER_SETTINGS = {
       'Basic': {
             'type': 'basic'
       },
-   }
+   },
+   # 'OAUTH2_CONFIG': {
+   #    'clientId': SOCIAL_AUTH_VK_OAUTH2_KEY,
+   #    'clientSecret': SOCIAL_AUTH_VK_OAUTH2_SECRET,
+   #    # 'appName': 'your application name'
+   #  },
 }
