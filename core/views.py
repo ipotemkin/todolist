@@ -3,7 +3,7 @@ from rest_framework.generics import (
     CreateAPIView,
     GenericAPIView,
     RetrieveUpdateDestroyAPIView,
-    UpdateAPIView, DestroyAPIView, RetrieveAPIView
+    UpdateAPIView, RetrieveAPIView
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
