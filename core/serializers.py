@@ -50,10 +50,10 @@ class LoginResponseSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
 
     def update(self, instance, validated_data):
-        raise NotImplemented
+        raise NotImplementedError
 
     def create(self, validated_data):
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class LoginSerializer(LoginResponseSerializer):
