@@ -78,8 +78,8 @@ class GoalListView(ListAPIView, GoalMixin):
         DjangoFilterBackend,
     ]
     filterset_class = GoalDataFilter
-    ordering_fields = ["title", "created"]
-    ordering = ["title"]
+    ordering_fields = ["priority", "due_date"]
+    ordering = ["-priority", "due_date"]
     search_fields = ["title", "description"]
 
 
