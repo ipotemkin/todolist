@@ -1,6 +1,9 @@
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
+from rest_framework.exceptions import PermissionDenied
 
+from core.models import User
 from core.serializers import UserSerializer
 from goals.models import GoalCategory, Goal, Comment, Board, BoardParticipant
 
@@ -12,6 +15,16 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
         model = GoalCategory
         read_only_fields = ("id", "created", "updated", "user")
         fields = "__all__"
+
+    # to check permissions while creating a category
+    def create(self, validated_data):
+        obj = self.Meta.model(**validated_data)
+        view = self._context['view']
+        request = self._context['request']
+        for permission in view.permission_classes:
+            if not permission.has_object_permission(self, request, view, obj):
+                raise PermissionDenied
+        return super().create(validated_data)
 
 
 class GoalCategorySerializer(GoalCategoryCreateSerializer):
@@ -43,6 +56,8 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
 
 class GoalSerializer(GoalCreateSerializer):
+    board = serializers.IntegerField(source="category.board_id", read_only=True)
+
     class Meta(GoalCreateSerializer.Meta):
         read_only_fields = ("id", "created", "updated", "category")
 
@@ -88,3 +103,63 @@ class BoardCreateSerializer(serializers.ModelSerializer):
             user=user, board=board, role=BoardParticipant.Role.owner
         )
         return board
+
+
+class BoardParticipantSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(
+        required=True,
+        # choices=BoardParticipant.editable_choices
+        choices=BoardParticipant.Role.choices
+    )
+    user = serializers.SlugRelatedField(
+        slug_field="username",
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        model = BoardParticipant
+        fields = "__all__"
+        read_only_fields = ("id", "created", "updated", "board")
+
+
+class BoardSerializer(serializers.ModelSerializer):
+    participants = BoardParticipantSerializer(many=True)
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Board
+        fields = "__all__"
+        read_only_fields = ("id", "created", "updated")
+
+    def update(self, instance, validated_data):
+        owner = validated_data.pop("user")
+        new_participants = validated_data.pop("participants")
+        new_by_id = {part["user"].id: part for part in new_participants}
+
+        old_participants = instance.participants.exclude(user=owner)
+        with transaction.atomic():
+            for old_participant in old_participants:
+                if old_participant.user_id not in new_by_id:
+                    old_participant.delete()
+                else:
+                    if old_participant.role != new_by_id[old_participant.user_id]["role"]:
+                        old_participant.role = new_by_id[old_participant.user_id]["role"]
+                        old_participant.save()
+                    new_by_id.pop(old_participant.user_id)
+            for new_part in new_by_id.values():
+                BoardParticipant.objects.create(
+                    board=instance,
+                    user=new_part["user"],
+                    role=new_part["role"]
+                )
+
+            instance.title = validated_data["title"]
+            instance.save()
+
+        return instance
+
+
+class BoardListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Board
+        fields = "__all__"
