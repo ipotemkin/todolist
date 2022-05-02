@@ -214,4 +214,3 @@ SWAGGER_SETTINGS = {
 }
 
 LOGIN_URL = 'core:login'
-
