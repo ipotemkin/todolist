@@ -79,6 +79,12 @@ class Comment(DatesModelMixin):
 
     goal = models.ForeignKey(Goal, verbose_name="Цель", on_delete=models.CASCADE)
     text = models.TextField(verbose_name="Текст комментария")
+    user = models.ForeignKey(
+        User,
+        verbose_name="Автор",
+        on_delete=models.PROTECT,
+        related_name="comments",
+    )
 
     def __str__(self):
         return self.text[:30]

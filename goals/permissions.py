@@ -88,7 +88,11 @@ class GoalPermissions(permissions.BasePermission):
 class CommentPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
 
-        # if obj.goal.
+        # изменяет/удаляет комментарий только его автор
+        if obj.user != request.user:
+            return False
+
+        # автор может изменить/удалить свой комментарий только если на этой доске у него роль owner/writer
         return check_user_board_permissions(request, obj.goal.category.board, EDITABLE_ROLES)
 
 
