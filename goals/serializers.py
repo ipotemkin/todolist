@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
@@ -6,6 +7,31 @@ from rest_framework.exceptions import PermissionDenied
 from core.models import User
 from core.serializers import UserSerializer
 from goals.models import GoalCategory, Goal, Comment, Board, BoardParticipant
+
+
+# class PermissionsOnCreateMixin(serializers.ModelSerializer):
+#     class Meta:
+#         model = None
+#
+#     def check_permissions(self):
+#         obj = self.Meta.model(**self.validated_data)
+#         view = self._context['view']
+#         request = self._context['request']
+#         for permission in view.permission_classes:
+#             if not permission.has_object_permission(self, request, view, obj):
+#                 raise PermissionDenied
+#         return True
+#         # return super(PermissionsOnCreateMixin, self).create(validated_data)
+
+
+def check_permissions(serializer):
+    obj = serializer.Meta.model(**serializer.validated_data)
+    view = serializer._context['view']
+    request = serializer._context['request']
+    for permission in view.permission_classes:
+        if not permission.has_object_permission(serializer, request, view, obj):
+            raise PermissionDenied
+    return True
 
 
 class GoalCategoryCreateSerializer(serializers.ModelSerializer):
@@ -16,14 +42,18 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "created", "updated", "user")
         fields = "__all__"
 
-    # to check permissions while creating a category
+    # # to check permissions while creating a category
+    # def create(self, validated_data):
+    #     obj = self.Meta.model(**validated_data)
+    #     view = self._context['view']
+    #     request = self._context['request']
+    #     for permission in view.permission_classes:
+    #         if not permission.has_object_permission(self, request, view, obj):
+    #             raise PermissionDenied
+    #     return super().create(validated_data)
+
     def create(self, validated_data):
-        obj = self.Meta.model(**validated_data)
-        view = self._context['view']
-        request = self._context['request']
-        for permission in view.permission_classes:
-            if not permission.has_object_permission(self, request, view, obj):
-                raise PermissionDenied
+        check_permissions(self)
         return super().create(validated_data)
 
 
@@ -50,9 +80,33 @@ class GoalCreateSerializer(serializers.ModelSerializer):
     def validate_category(self, value):
         if value.is_deleted:
             raise ValidationError("not allowed in deleted category")
-        if value.user != self.context["request"].user:
-            raise ValidationError("not owner of category")
+
+        # if value.user != self.context["request"].user:
+        #     raise ValidationError("not owner of category")
+
+        # query = (
+        #         (Q(role=BoardParticipant.Role.owner) | Q(role=BoardParticipant.Role.writer))
+        #         & Q(user=self.context["request"].user)
+        #         & Q(board=value.board)
+        # )
+        # if not BoardParticipant.objects.filter(query).exists():
+        #     raise PermissionDenied
+
         return value
+
+    # # to check permissions while creating a goal
+    # def create(self, validated_data):
+    #     obj = self.Meta.model(**validated_data)
+    #     view = self._context['view']
+    #     request = self._context['request']
+    #     for permission in view.permission_classes:
+    #         if not permission.has_object_permission(self, request, view, obj):
+    #             raise PermissionDenied
+    #     return super().create(validated_data)
+
+    def create(self, validated_data):
+        check_permissions(self)
+        return super().create(validated_data)
 
 
 class GoalSerializer(GoalCreateSerializer):

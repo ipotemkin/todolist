@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from goals.filters import GoalDataFilter
 from goals.models import GoalCategory, Goal, Comment, Board
-from goals.permissions import BoardPermissions, GoalCategoryPermissions
+from goals.permissions import BoardPermissions, GoalCategoryPermissions, GoalPermissions
 from goals.serializers import (
     GoalCategoryCreateSerializer,
     GoalCategorySerializer,
@@ -64,13 +64,13 @@ class GoalCategoryView(RetrieveUpdateDestroyAPIView, GoalCategoryMixin):
 
 class GoalCreateView(CreateAPIView):
     model = Goal
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, GoalPermissions]
     serializer_class = GoalCreateSerializer
 
 
 class GoalMixin(GenericAPIView):
     model = Goal
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, GoalPermissions]
     serializer_class = GoalSerializer
 
     def get_queryset(self):
