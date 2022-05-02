@@ -64,6 +64,12 @@ class LoginSerializer(LoginResponseSerializer):
             return user
         raise AuthenticationFailed
 
+    def update(self, instance, validated_data):
+        raise NotImplementedError
+
+    def create(self, validated_data):
+        raise NotImplementedError
+
 
 class UpdatePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(write_only=True)

@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import Q
 from rest_framework import serializers
 from rest_framework.serializers import ValidationError
 from rest_framework.exceptions import PermissionDenied
@@ -7,21 +6,6 @@ from rest_framework.exceptions import PermissionDenied
 from core.models import User
 from core.serializers import UserSerializer
 from goals.models import GoalCategory, Goal, Comment, Board, BoardParticipant
-
-
-# class PermissionsOnCreateMixin(serializers.ModelSerializer):
-#     class Meta:
-#         model = None
-#
-#     def check_permissions(self):
-#         obj = self.Meta.model(**self.validated_data)
-#         view = self._context['view']
-#         request = self._context['request']
-#         for permission in view.permission_classes:
-#             if not permission.has_object_permission(self, request, view, obj):
-#                 raise PermissionDenied
-#         return True
-#         # return super(PermissionsOnCreateMixin, self).create(validated_data)
 
 
 def check_permissions(serializer):
@@ -41,16 +25,6 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
         model = GoalCategory
         read_only_fields = ("id", "created", "updated", "user")
         fields = "__all__"
-
-    # # to check permissions while creating a category
-    # def create(self, validated_data):
-    #     obj = self.Meta.model(**validated_data)
-    #     view = self._context['view']
-    #     request = self._context['request']
-    #     for permission in view.permission_classes:
-    #         if not permission.has_object_permission(self, request, view, obj):
-    #             raise PermissionDenied
-    #     return super().create(validated_data)
 
     def create(self, validated_data):
         check_permissions(self)
@@ -80,29 +54,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
     def validate_category(self, value):
         if value.is_deleted:
             raise ValidationError("not allowed in deleted category")
-
-        # if value.user != self.context["request"].user:
-        #     raise ValidationError("not owner of category")
-
-        # query = (
-        #         (Q(role=BoardParticipant.Role.owner) | Q(role=BoardParticipant.Role.writer))
-        #         & Q(user=self.context["request"].user)
-        #         & Q(board=value.board)
-        # )
-        # if not BoardParticipant.objects.filter(query).exists():
-        #     raise PermissionDenied
-
         return value
-
-    # # to check permissions while creating a goal
-    # def create(self, validated_data):
-    #     obj = self.Meta.model(**validated_data)
-    #     view = self._context['view']
-    #     request = self._context['request']
-    #     for permission in view.permission_classes:
-    #         if not permission.has_object_permission(self, request, view, obj):
-    #             raise PermissionDenied
-    #     return super().create(validated_data)
 
     def create(self, validated_data):
         check_permissions(self)
@@ -130,8 +82,6 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate_goal(self, value):
-        # if value.category.user != self.context["request"].user:
-        #     raise ValidationError("not owner")
         if value.is_deleted:
             raise ValidationError("not allowed on deleted goal")
         return value
@@ -142,7 +92,6 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(CommentCreateSerializer):
-    # user = UserSerializer(source="goal.category.user", read_only=True)
     user = UserSerializer(read_only=True)
 
     class Meta(CommentCreateSerializer.Meta):
@@ -169,7 +118,6 @@ class BoardCreateSerializer(serializers.ModelSerializer):
 class BoardParticipantSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(
         required=True,
-        # choices=BoardParticipant.editable_choices
         choices=BoardParticipant.Role.choices
     )
     user = serializers.SlugRelatedField(

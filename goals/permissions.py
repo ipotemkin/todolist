@@ -7,7 +7,9 @@ from goals.models import BoardParticipant
 EDITABLE_ROLES = Q(role=BoardParticipant.Role.owner) | Q(role=BoardParticipant.Role.writer)
 
 
-def check_user_board_permissions(request, board, required_roles: Q):
+def check_user_board_permissions(request, board, required_roles: Q) -> bool:
+    """A shortcut to check the 'request.user's permissions on the specified board."""
+
     if not request.user.is_authenticated:
         return False
 
@@ -20,73 +22,22 @@ def check_user_board_permissions(request, board, required_roles: Q):
 
 
 class BoardPermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # if not request.user.is_authenticated:
-        #     return False
-        #
-        # if request.method in permissions.SAFE_METHODS:
-        #     return BoardParticipant.objects.filter(
-        #         user=request.user,
-        #         board=obj
-        #     ).exists()
-        #
-        # return BoardParticipant.objects.filter(
-        #     user=request.user,
-        #     board=obj,
-        #     role=BoardParticipant.Role.owner
-        # ).exists()
-
+    def has_object_permission(self, request, view, obj) -> bool:
         return check_user_board_permissions(request, obj, Q(role=BoardParticipant.Role.owner))
 
 
 class GoalCategoryPermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # if not request.user.is_authenticated:
-        #     return False
-        #
-        # if request.method in permissions.SAFE_METHODS:
-        #     print('request.method =', request.method)
-        #     return BoardParticipant.objects.filter(
-        #         user=request.user,
-        #         board=obj.board
-        #     ).exists()
-        #
-        # print("unsafe methods")
-        # query = (
-        #             (Q(role=BoardParticipant.Role.owner) | Q(role=BoardParticipant.Role.writer))
-        #             & Q(user=request.user)
-        #             & Q(board=obj.board)
-        # )
-        # return BoardParticipant.objects.filter(query).exists()
-
+    def has_object_permission(self, request, view, obj) -> bool:
         return check_user_board_permissions(request, obj.board, EDITABLE_ROLES)
 
 
 class GoalPermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # if not request.user.is_authenticated:
-        #     return False
-        #
-        # if request.method in permissions.SAFE_METHODS:
-        #     print('request.method =', request.method)
-        #     return BoardParticipant.objects.filter(
-        #         user=request.user,
-        #         board=obj.category.board
-        #     ).exists()
-        #
-        # print("unsafe methods")
-        # query = (
-        #             (Q(role=BoardParticipant.Role.owner) | Q(role=BoardParticipant.Role.writer))
-        #             & Q(user=request.user)
-        #             & Q(board=obj.category.board)
-        # )
-        # return BoardParticipant.objects.filter(query).exists()
-
+    def has_object_permission(self, request, view, obj) -> bool:
         return check_user_board_permissions(request, obj.category.board, EDITABLE_ROLES)
 
 
 class CommentPermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj) -> bool:
 
         # изменяет/удаляет комментарий только его автор
         if obj.user != request.user:
@@ -97,5 +48,5 @@ class CommentPermissions(permissions.BasePermission):
 
 
 class CommentCreatePermissions(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, obj) -> bool:
         return check_user_board_permissions(request, obj.goal.category.board, EDITABLE_ROLES)
