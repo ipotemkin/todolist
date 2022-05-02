@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from goals.filters import GoalDataFilter
 from goals.models import GoalCategory, Goal, Comment, Board
-from goals.permissions import BoardPermissions, GoalCategoryPermissions, GoalPermissions
+from goals.permissions import BoardPermissions, GoalCategoryPermissions, GoalPermissions, CommentPermissions, \
+    CommentCreatePermissions
 from goals.serializers import (
     GoalCategoryCreateSerializer,
     GoalCategorySerializer,
@@ -104,17 +105,18 @@ class GoalView(RetrieveUpdateDestroyAPIView, GoalMixin):
 
 class CommentCreateView(CreateAPIView):
     model = Comment
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CommentCreatePermissions]
     serializer_class = CommentCreateSerializer
 
 
 class CommentMixin(GenericAPIView):
     model = Comment
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CommentPermissions]
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        return Comment.objects.filter(goal__category__user=self.request.user)
+        # return Comment.objects.filter(goal__category__user=self.request.user)
+        return Comment.objects.all()
 
 
 class CommentListView(ListAPIView, CommentMixin):

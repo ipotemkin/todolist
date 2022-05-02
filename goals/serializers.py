@@ -128,11 +128,15 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate_goal(self, value):
-        if value.category.user != self.context["request"].user:
-            raise ValidationError("not owner")
+        # if value.category.user != self.context["request"].user:
+        #     raise ValidationError("not owner")
         if value.is_deleted:
             raise ValidationError("not allowed on deleted goal")
         return value
+
+    def create(self, validated_data):
+        check_permissions(self)
+        return super().create(validated_data)
 
 
 class CommentSerializer(CommentCreateSerializer):

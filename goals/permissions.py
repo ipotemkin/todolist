@@ -83,3 +83,15 @@ class GoalPermissions(permissions.BasePermission):
         # return BoardParticipant.objects.filter(query).exists()
 
         return check_user_board_permissions(request, obj.category.board, EDITABLE_ROLES)
+
+
+class CommentPermissions(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+
+        # if obj.goal.
+        return check_user_board_permissions(request, obj.goal.category.board, EDITABLE_ROLES)
+
+
+class CommentCreatePermissions(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return check_user_board_permissions(request, obj.goal.category.board, EDITABLE_ROLES)
