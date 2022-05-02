@@ -49,7 +49,13 @@ class GoalCategoryMixin(GenericAPIView):
                 Q(board__participants__user__username=self.request.user)
                 & Q(is_deleted=False)
         )
-        return GoalCategory.objects.filter(query)
+        return (
+            GoalCategory.objects
+            .prefetch_related('board')
+            .prefetch_related('user')
+            # .prefetch_related('boardparticipant')
+            .filter(query)
+        )
 
 
 class GoalCategoryListView(ListAPIView, GoalCategoryMixin):
