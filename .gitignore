@@ -155,3 +155,5 @@ postgres-data/db/
 #docker-compose.yml
 
 .DS_Store
+
+todo.py

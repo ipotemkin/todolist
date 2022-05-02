@@ -13,7 +13,11 @@ import os
 from pathlib import Path
 import environ
 
-env = environ.Env(DEBUG=(bool, False))
+env = environ.Env(
+    DEBUG=(bool, False),
+    SOCIAL_AUTH_VK_OAUTH2_KEY=(str, 'example'),
+    SOCIAL_AUTH_VK_OAUTH2_SECRET=(str, 'example'),
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,9 +48,9 @@ CSRF_TRUSTED_ORIGINS = (
     'http://51.250.72.80:8002',
 )
 
-CORS_ORIGIN_WHITELIST = (
-    "http://0.0.0.0:8002",
-)
+# CORS_ORIGIN_WHITELIST = (
+#     "http://0.0.0.0:8002",
+# )
 
 # Application definition
 
@@ -208,3 +212,6 @@ SWAGGER_SETTINGS = {
    #    # 'appName': 'your application name'
    #  },
 }
+
+LOGIN_URL = 'core:login'
+

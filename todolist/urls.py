@@ -45,6 +45,6 @@ urlpatterns = [
     ),
 
     # to login/logout via swagger
-    path('accounts/login/', LoginView.as_view()),
+    # path('accounts/login/', LoginView.as_view()),
     path('accounts/logout/', LogoutView.as_view()),
 ]
