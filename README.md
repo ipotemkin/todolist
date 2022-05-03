@@ -11,7 +11,7 @@
 
 2.1 С фронтом:
 
->docker-compose --file docker-test up -d
+>docker-compose --file docker-test.yml up -d
 
 После запуска приложение доступно оп адресу: ```localhost:8080```
 
