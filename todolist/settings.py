@@ -17,6 +17,7 @@ env = environ.Env(
     DEBUG=(bool, False),
     SOCIAL_AUTH_VK_OAUTH2_KEY=(str, 'example'),
     SOCIAL_AUTH_VK_OAUTH2_SECRET=(str, 'example'),
+    NO_FRONT=(bool, False),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,6 +34,8 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
+NO_FRONT = env("NO_FRONT")
+
 ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -48,9 +51,6 @@ CSRF_TRUSTED_ORIGINS = (
     'http://51.250.72.80:8002',
 )
 
-# CORS_ORIGIN_WHITELIST = (
-#     "http://0.0.0.0:8002",
-# )
 
 # Application definition
 
@@ -195,10 +195,9 @@ SOCIAL_AUTH_TRAILING_SLASH = False
 
 APPEND_SLASH = False
 
-# SOCIAL_AUTH_USER_MODEL = 'core.User'
-
-# SOCIAL_AUTH_SANITIZE_REDIRECTS = False
-
+# чтобы возвращатьяся в Swagger после Django Login/Logout, но это не работает ((
+# помогает только нажатие на ссылку Schema
+LOGOUT_REDIRECT_URL = "core/" if NO_FRONT else "swagger/core/"
 
 SWAGGER_SETTINGS = {
    'SECURITY_DEFINITIONS': {
@@ -206,28 +205,27 @@ SWAGGER_SETTINGS = {
             'type': 'basic'
       },
    },
-   # 'OAUTH2_CONFIG': {
-   #    'clientId': SOCIAL_AUTH_VK_OAUTH2_KEY,
-   #    'clientSecret': SOCIAL_AUTH_VK_OAUTH2_SECRET,
-   #    # 'appName': 'your application name'
-   #  },
+   # 'USE_SESSION_AUTH': False,  # отключает Django Login/Logout в Swagger
+   'LOGIN_URL': 'core:login',
+   'LOGOUT_URL': 'core:logout',
+   'LOGOUT_REDIRECT_URL': LOGOUT_REDIRECT_URL,
+   'REFETCH_SCHEMA_WITH_AUTH': True,
+   'REFETCH_SCHEMA_ON_LOGOUT': True,
 }
 
-LOGIN_URL = 'core:login'
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        }
-    },
-    'loggers': {
-        'django.db': {
-            'level': 'DEBUG',
-            'handlers': ['console'],
-        }
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#         }
+#     },
+#     'loggers': {
+#         'django.db': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#         }
+#     }
+# }

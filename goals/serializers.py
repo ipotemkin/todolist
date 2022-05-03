@@ -8,7 +8,10 @@ from core.serializers import UserSerializer
 from goals.models import GoalCategory, Goal, Comment, Board, BoardParticipant
 
 
+# я пытался сделать это в mixin-классе, но не получилось ((
 def check_permissions(serializer):
+    """To check permissions while creating objects"""
+
     obj = serializer.Meta.model(**serializer.validated_data)
     view = serializer._context['view']
     request = serializer._context['request']
@@ -36,7 +39,6 @@ class GoalCategorySerializer(GoalCategoryCreateSerializer):
 
     # проверить работу приложения – возможны ошибки с этой строчкой
     board = serializers.IntegerField(source='board_id', read_only=True)
-
 
     # user = serializers.IntegerField(source='user_id', read_only=True)
 
@@ -128,13 +130,8 @@ class BoardParticipantSerializer(serializers.ModelSerializer):
     )
     user = serializers.SlugRelatedField(
         slug_field="username",
-        queryset=(
-            User.objects
-            # .prefetch_related('participants')
-            .all()
-        )
+        queryset=User.objects.all()
     )
-    # board_id = serializers.IntegerField(source='board_id')
 
     class Meta:
         model = BoardParticipant

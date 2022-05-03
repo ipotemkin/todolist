@@ -1,0 +1,49 @@
+version: "3.9"
+
+x-common-variables: &common-variables
+  DB_PASSWORD: postgres
+  DB_USER: postgres
+  DB_NAME: postgres
+  DB_HOST: postgres
+  SECRET_KEY: 'testing-secret-key'
+  DEBUG: 'TRUE'
+  SOCIAL_AUTH_VK_OAUTH2_KEY: 'testing-key'
+  SOCIAL_AUTH_VK_OAUTH2_SECRET: 'testing-secret'
+
+services:
+
+  front:
+    image: sermalenk/skypro-front:lesson_37
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+    environment: *common-variables
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    command: >
+      sh -c "python manage.py migrate
+            python3 manage.py runserver 0.0.0.0:8000"
+
+  postgres:
+    image: postgres:12.4-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

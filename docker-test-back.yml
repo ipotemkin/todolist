@@ -1,12 +1,15 @@
 version: "3.9"
 
 x-common-variables: &common-variables
-  DB_PASSWORD: ${DB_PASSWORD}
-  DB_USER: ${DB_USER}
-  DB_NAME: ${DB_NAME}
+  DB_PASSWORD: postgres
+  DB_USER: postgres
+  DB_NAME: postgres
   DB_HOST: postgres
-  SECRET_KEY: ${SECRET_KEY}
-  DEBUG: ${DEBUG}
+  SECRET_KEY: 'testing-secret-key'
+  DEBUG: 'TRUE'
+  SOCIAL_AUTH_VK_OAUTH2_KEY: 'testing-key'
+  SOCIAL_AUTH_VK_OAUTH2_SECRET: 'testing-secret'
+  NO_FRONT: 'TRUE'
 
 services:
 
@@ -16,33 +19,27 @@ services:
     volumes:
       - .:/code
     environment: *common-variables
-#      <<: *common-variables
-#      DB_HOST: postgres
-
     ports:
       - '8000:8000'
     depends_on:
       postgres:
         condition: service_healthy
-
     command: >
       sh -c "python manage.py migrate
             python3 manage.py runserver 0.0.0.0:8000"
-#    volumes:
-#      - api_media:/opt/app/media
 
   postgres:
-    image: postgres:alpine
+    image: postgres:12.4-alpine
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
     volumes:
-      - ./postgres-data/db/:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
-#volumes:
-#  api_media:
+volumes:
+  postgres-data:

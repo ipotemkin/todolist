@@ -7,21 +7,19 @@
 
 >git clone https://github.com/ipotemkin/todolist.git
 
-2. Переменуйте файл .env.example в .env
+2. Дальше есть две опции: запуск с фронтом и без него
 
-3. Дальше есть две опции: запуск с фронтом и без него
+2.1 С фронтом:
 
-3.1 С фронтом:
-
->docker-compose up -d
+>docker-compose --file docker-test up -d
 
 После запуска приложение доступно оп адресу: ```localhost:8080```
 
-3.2 Без фронта – удобно, чтобы протестировать через swagger:
+2.2 Без фронта – удобно, чтобы протестировать через swagger:
 
->docker-compose --file docker-compose-back.yml up -d
+>docker-compose --file docker-test-back.yml up -d
 
-После запуска приложение доступно по адресу: ```localhost:8000/swagger/```
+После запуска приложение доступно по адресу: ```localhost:8000/``` или ```localhost:8000/swagger/```
 
 ## История разработки по домашкам
 ### Шаг первый (ДЗ 33):

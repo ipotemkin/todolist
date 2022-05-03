@@ -20,9 +20,6 @@ def check_user_board_permissions(request, board, required_roles: Q) -> bool:
 
     return (
         BoardParticipant.objects
-        # .only('user_id', 'user__username')
-        # .prefetch_related('user__goalcategory_set__board')
-        # .select_related('user')
         .filter(query).exists()
     )
 

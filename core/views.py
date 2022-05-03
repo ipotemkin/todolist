@@ -49,13 +49,6 @@ class LoginView(GenericAPIView):
     def post(self, request, *args, **kwargs) -> Response:
         user_login = self.get_serializer(data=request.data)
         user_login.is_valid(raise_exception=True)
-
-        # username = user_login.validated_data['username']
-        # user = User.objects.get(username=username)
-        # login_model_backend(request, user=user)
-        # user_serializer = UserSerializer(instance=user)
-        # return Response(user_serializer.data)
-
         login_model_backend(request=request, user=user_login.validated_data)
         return Response(user_login.data, status=200)
 
@@ -76,10 +69,11 @@ class ProfileView(RetrieveUpdateDestroyAPIView, UserMixin):
         return Response({})
 
 
-class LogoutView(RetrieveAPIView, UserMixin):
+class LogoutView(GenericAPIView):
     serializer_class = UserSerializer
 
-    def retrieve(self, request, *args, **kwargs) -> Response:
+    @swagger_auto_schema(responses={200: ""})
+    def get(self, request, *args, **kwargs):
         logout(request)
         return Response({"message": "user logged out"}, status=200)
 

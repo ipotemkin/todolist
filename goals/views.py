@@ -183,7 +183,11 @@ class BoardMixin(GenericAPIView):
     serializer_class = BoardSerializer
 
     def get_queryset(self):
-        return Board.objects.filter(participants__user=self.request.user, is_deleted=False)
+        # эта строчка вызывала ошибку в swagger
+        # return Board.objects.filter(participants__user=self.request.user, is_deleted=False)
+
+        # после добавления id ошибка исчезла => нужно протестить
+        return Board.objects.filter(participants__user=self.request.user.id, is_deleted=False)
 
 
 class BoardView(RetrieveUpdateDestroyAPIView, BoardMixin):
