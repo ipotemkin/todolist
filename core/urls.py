@@ -2,9 +2,11 @@ from django.urls import path
 
 from core import views
 
+app_name = 'core'
+
 urlpatterns = [
-    path('signup', views.SignupView.as_view()),
-    path('login', views.LoginView.as_view()),
-    path('profile', views.ProfileView.as_view()),
-    path('update_password', views.UpdatePasswordView.as_view()),
+    path('signup', views.SignupView.as_view(), name='signup'),
+    path('login', views.LoginView.as_view(), name='login'),
+    path('profile', views.ProfileView.as_view(), name='profile'),
+    path('update_password', views.UpdatePasswordView.as_view(), name='change-password'),
 ]

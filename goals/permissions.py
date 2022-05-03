@@ -13,27 +13,33 @@ def check_user_board_permissions(request, board, required_roles: Q) -> bool:
     if not request.user.is_authenticated:
         return False
 
-    query = Q(user=request.user) & Q(board=board)
+    query = Q(user=request.user) & Q(board_id=board)
 
     if request.method not in permissions.SAFE_METHODS:
         query &= required_roles
 
-    return BoardParticipant.objects.filter(query).exists()
+    return (
+        BoardParticipant.objects
+        # .only('user_id', 'user__username')
+        # .prefetch_related('user__goalcategory_set__board')
+        # .select_related('user')
+        .filter(query).exists()
+    )
 
 
 class BoardPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj) -> bool:
-        return check_user_board_permissions(request, obj, Q(role=BoardParticipant.Role.owner))
+        return check_user_board_permissions(request, obj.id, Q(role=BoardParticipant.Role.owner))
 
 
 class GoalCategoryPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj) -> bool:
-        return check_user_board_permissions(request, obj.board, EDITABLE_ROLES)
+        return check_user_board_permissions(request, obj.board_id, EDITABLE_ROLES)
 
 
 class GoalPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj) -> bool:
-        return check_user_board_permissions(request, obj.category.board, EDITABLE_ROLES)
+        return check_user_board_permissions(request, obj.category.board_id, EDITABLE_ROLES)
 
 
 class CommentPermissions(permissions.BasePermission):
@@ -44,9 +50,9 @@ class CommentPermissions(permissions.BasePermission):
             return False
 
         # автор может изменить/удалить свой комментарий только если на этой доске у него роль owner/writer
-        return check_user_board_permissions(request, obj.goal.category.board, EDITABLE_ROLES)
+        return check_user_board_permissions(request, obj.goal.category.board_id, EDITABLE_ROLES)
 
 
 class CommentCreatePermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj) -> bool:
-        return check_user_board_permissions(request, obj.goal.category.board, EDITABLE_ROLES)
+        return check_user_board_permissions(request, obj.goal.category.board_id, EDITABLE_ROLES)

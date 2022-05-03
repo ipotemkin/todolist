@@ -19,7 +19,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 
-from core.views import LogoutView, LoginView
+from core.views import LogoutView  # , LoginView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -45,6 +45,6 @@ urlpatterns = [
     ),
 
     # to login/logout via swagger
-    path('accounts/login/', LoginView.as_view()),
+    # path('accounts/login/', LoginView.as_view()),
     path('accounts/logout/', LogoutView.as_view()),
 ]

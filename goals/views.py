@@ -47,15 +47,17 @@ class GoalCategoryMixin(GenericAPIView):
     def get_queryset(self):
         query = (
                 Q(board__participants__user__username=self.request.user)
-                & Q(is_deleted=False)
+                &
+                Q(is_deleted=False)
         )
         return (
             GoalCategory.objects
-            .prefetch_related('board')
-            .prefetch_related('user')
-            # .prefetch_related('boardparticipant')
-            .filter(query)
+            # .prefetch_related('board', 'user')  # 5 queries
+            # .select_related('board', 'user')  # 3 queries
+            .select_related('user')  # 3 queries
+            .filter(query)  # 13 queries
         )
+        # количество запросов оптимизировано с 13 до 3
 
 
 class GoalCategoryListView(ListAPIView, GoalCategoryMixin):
@@ -90,10 +92,15 @@ class GoalMixin(GenericAPIView):
     serializer_class = GoalSerializer
 
     def get_queryset(self):
-        return Goal.objects.filter(
-            category__board__participants__user__username=self.request.user,
-            is_deleted=False
+        return (
+            Goal.objects
+            .select_related('category')  # 3 queries
+            .filter(
+                category__board__participants__user__username=self.request.user,
+                is_deleted=False
+            )  # 15 queries
         )
+        # количество запросов оптимизировано с 15 до 3
 
 
 class GoalListView(ListAPIView, GoalMixin):
@@ -128,7 +135,25 @@ class CommentMixin(GenericAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        return Comment.objects.all()
+        return (
+            Comment.objects
+            # .select_related('goal')  # 14 queries
+            # .select_related('user')  # 13 queries
+
+            # 12 queries
+            .select_related('user')
+            .select_related('goal__category__board')
+
+            .all()  # 14 queries
+        )
+        # Количество заросов было оптимизировано с 14 до 12,
+        # после замены board на board_id в permissions
+        # количество запросов удалось сократить до 10.
+        # Это количество запросов при открытии списка комментариев цели через фронт.
+        # Итоговое количество запросов большое в связи с тем,
+        # что фронт делает аж 3 запроса к api
+        # Соответственно, если запрашивать через api только список комментариев,
+        # количество запросов к БД будет меньше (должно быть 4 запроса)
 
 
 class CommentListView(ListAPIView, CommentMixin):

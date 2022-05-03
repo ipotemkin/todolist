@@ -34,6 +34,12 @@ class GoalCategoryCreateSerializer(serializers.ModelSerializer):
 class GoalCategorySerializer(GoalCategoryCreateSerializer):
     user = UserSerializer(read_only=True)
 
+    # проверить работу приложения – возможны ошибки с этой строчкой
+    board = serializers.IntegerField(source='board_id', read_only=True)
+
+
+    # user = serializers.IntegerField(source='user_id', read_only=True)
+
     def validate_user(self, value):
         if value != self.context["request"].user:
             raise ValidationError("not owner of category")
@@ -122,8 +128,13 @@ class BoardParticipantSerializer(serializers.ModelSerializer):
     )
     user = serializers.SlugRelatedField(
         slug_field="username",
-        queryset=User.objects.all()
+        queryset=(
+            User.objects
+            # .prefetch_related('participants')
+            .all()
+        )
     )
+    # board_id = serializers.IntegerField(source='board_id')
 
     class Meta:
         model = BoardParticipant
