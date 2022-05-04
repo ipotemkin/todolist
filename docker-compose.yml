@@ -31,6 +31,8 @@ services:
       - '8080:80'
     depends_on:
       - api
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
 
   api:
     build:
