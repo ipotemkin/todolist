@@ -197,6 +197,7 @@ SWAGGER_SETTINGS = {
    # 'USE_SESSION_AUTH': False,  # отключает Django Login/Logout в Swagger
    'LOGIN_URL': 'core:login',
    'LOGOUT_URL': 'core:logout',
+   'LOGIN_REDIRECT_URL': '/',
    'LOGOUT_REDIRECT_URL': LOGOUT_REDIRECT_URL,
    'REFETCH_SCHEMA_WITH_AUTH': True,
    'REFETCH_SCHEMA_ON_LOGOUT': True,

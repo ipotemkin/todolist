@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        * {
+            font-size: 18px;
+            font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+            background: whitesmoke;
+        }
+        .container {
+            width: auto;
+            margin-top: 64px;
+
+            border: 0.5px solid grey;
+            border-radius: 4px;
+
+            background: white;
+        }
+        .button
+        {
+            width: 100%;
+            background: steelblue;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        h2 {
+            font-size: 20px;
+            text-align: center;
+
+            color: white;
+        }
+        form {
+            margin: 24px;
+        }
+        .input {
+            border: 0.5ps solid grey;
+            {#background: greenyellow;#}
+        }
+        .form__heading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            height: 64px;
+            margin-bottom: 12px;
+
+            border-radius: 4px 4px 0 0;
+
+            background: steelblue;
+        }
+    </style>
+</head>
+<body>
+{#    <form method="post">#}
+{#      {% csrf_token %}#}
+{#      {{ form.as_p }}#}
+{#      <button type="submit">Войти</button>#}
+{#    </form>#}
+    <div class="container">
+        <div class="form__heading">
+            <h2>Django Login</h2>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="field">
+              <label for="{{ form.username.id_for_label }}" class="label">
+                Имя пользователя:
+              </label>
+              <div class="input">
+                {{ form.username }}
+              </div>
+              <p>{{ form.username.errors }}</p>
+            </div>
+
+            <div class="field">
+              <label for="{{ form.password.id_for_label }}" class="label">
+                Пароль:
+              </label>
+              <div class="control">
+                {{ form.password }}
+              </div>
+              <p>{{ form.password.errors }}</p>
+            </div>
+
+            <div class="field">
+              <div class="control">
+                <button class="button is-link">ВОЙТИ</button>
+              </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

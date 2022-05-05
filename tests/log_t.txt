@@ -1,0 +1,686 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-7.1.2, pluggy-1.0.0 -- /Users/igorpotemkin/PycharmProjects/Module_6/todolist/venv/bin/python
+cachedir: .pytest_cache
+django: settings: todolist.settings (from ini)
+rootdir: /Users/igorpotemkin/PycharmProjects/Module_6/todolist, configfile: pytest.ini
+plugins: Faker-13.7.0, factoryboy-2.2.0, django-4.5.2
+collecting ... collected 1 item
+
+test_goals.py::test_goal_category_get_all ERROR                          [100%]
+
+==================================== ERRORS ====================================
+_________________ ERROR at setup of test_goal_category_get_all _________________
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+
+    @async_unsafe
+    def ensure_connection(self):
+        """Guarantee that a connection to the database is established."""
+        if self.connection is None:
+            with self.wrap_database_errors:
+>               self.connect()
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>,)
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+
+    @async_unsafe
+    def connect(self):
+        """Connect to the database. Assume that the connection is closed."""
+        # Check for invalid configurations.
+        self.check_settings()
+        # In case the previous connection was closed while in an atomic block
+        self.in_atomic_block = False
+        self.savepoint_ids = []
+        self.needs_rollback = False
+        # Reset parameters defining when to close the connection
+        max_age = self.settings_dict["CONN_MAX_AGE"]
+        self.close_at = None if max_age is None else time.monotonic() + max_age
+        self.closed_in_transaction = False
+        self.errors_occurred = False
+        # Establish the connection
+        conn_params = self.get_connection_params()
+>       self.connection = self.get_new_connection(conn_params)
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:225: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>, {'database': 'postgres', 'host': 'localhost', 'password': '111', 'port': '5432', ...})
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+conn_params = {'database': 'postgres', 'host': 'localhost', 'password': '111', 'port': '5432', ...}
+
+    @async_unsafe
+    def get_new_connection(self, conn_params):
+>       connection = Database.connect(**conn_params)
+
+../venv/lib/python3.9/site-packages/django/db/backends/postgresql/base.py:203: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = 'user=igor password=111 host=localhost port=5432 dbname=postgres'
+connection_factory = None, cursor_factory = None
+kwargs = {'database': 'postgres', 'host': 'localhost', 'password': '111', 'port': '5432', ...}
+kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        """
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect("dbname=test user=postgres password=secret")
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database="test", user="postgres", password="secret")
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        """
+        kwasync = {}
+        if 'async' in kwargs:
+            kwasync['async'] = kwargs.pop('async')
+        if 'async_' in kwargs:
+            kwasync['async_'] = kwargs.pop('async_')
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+>       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       psycopg2.OperationalError: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+E       connection to server at "localhost" (::1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+
+../venv/lib/python3.9/site-packages/psycopg2/__init__.py:122: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x110dcd8e0>
+
+    @contextmanager
+    def _nodb_cursor(self):
+        cursor = None
+        try:
+>           with super()._nodb_cursor() as cursor:
+
+../venv/lib/python3.9/site-packages/django/db/backends/postgresql/base.py:318: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <contextlib._GeneratorContextManager object at 0x1118b7a60>
+
+    def __enter__(self):
+        # do not keep args and kwds alive unnecessarily
+        # they are only needed for recreation, which is not possible anymore
+        del self.args, self.kwds, self.func
+        try:
+>           return next(self.gen)
+
+/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/contextlib.py:117: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x110dcd8e0>
+
+    @contextmanager
+    def _nodb_cursor(self):
+        """
+        Return a cursor from an alternative connection to be used when there is
+        no need to access the main database, specifically for test db
+        creation/deletion. This also prevents the production database from
+        being exposed to potential child threads while (or after) the test
+        database is destroyed. Refs #10868, #17786, #16969.
+        """
+        conn = self.__class__({**self.settings_dict, "NAME": None}, alias=NO_DB_ALIAS)
+        try:
+>           with conn.cursor() as cursor:
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:656: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>,)
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+
+    @async_unsafe
+    def cursor(self):
+        """Create a cursor, opening a connection if necessary."""
+>       return self._cursor()
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:284: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+name = None
+
+    def _cursor(self, name=None):
+>       self.ensure_connection()
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:260: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>,)
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+
+    @async_unsafe
+    def ensure_connection(self):
+        """Guarantee that a connection to the database is established."""
+        if self.connection is None:
+            with self.wrap_database_errors:
+>               self.connect()
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.utils.DatabaseErrorWrapper object at 0x1118b7d30>
+exc_type = <class 'psycopg2.OperationalError'>
+exc_value = OperationalError('connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused\n\tIs the serv...(::1), port 5432 failed: Connection refused\n\tIs the server running on that host and accepting TCP/IP connections?\n')
+traceback = <traceback object at 0x1118c30c0>
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is None:
+            return
+        for dj_exc_type in (
+            DataError,
+            OperationalError,
+            IntegrityError,
+            InternalError,
+            ProgrammingError,
+            NotSupportedError,
+            DatabaseError,
+            InterfaceError,
+            Error,
+        ):
+            db_exc_type = getattr(self.wrapper.Database, dj_exc_type.__name__)
+            if issubclass(exc_type, db_exc_type):
+                dj_exc_value = dj_exc_type(*exc_value.args)
+                # Only set the 'errors_occurred' flag for errors that may make
+                # the connection unusable.
+                if dj_exc_type not in (DataError, IntegrityError):
+                    self.wrapper.errors_occurred = True
+>               raise dj_exc_value.with_traceback(traceback) from exc_value
+
+../venv/lib/python3.9/site-packages/django/db/utils.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+
+    @async_unsafe
+    def ensure_connection(self):
+        """Guarantee that a connection to the database is established."""
+        if self.connection is None:
+            with self.wrap_database_errors:
+>               self.connect()
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>,)
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+
+    @async_unsafe
+    def connect(self):
+        """Connect to the database. Assume that the connection is closed."""
+        # Check for invalid configurations.
+        self.check_settings()
+        # In case the previous connection was closed while in an atomic block
+        self.in_atomic_block = False
+        self.savepoint_ids = []
+        self.needs_rollback = False
+        # Reset parameters defining when to close the connection
+        max_age = self.settings_dict["CONN_MAX_AGE"]
+        self.close_at = None if max_age is None else time.monotonic() + max_age
+        self.closed_in_transaction = False
+        self.errors_occurred = False
+        # Establish the connection
+        conn_params = self.get_connection_params()
+>       self.connection = self.get_new_connection(conn_params)
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:225: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>, {'database': 'postgres', 'host': 'localhost', 'password': '111', 'port': '5432', ...})
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7a90>
+conn_params = {'database': 'postgres', 'host': 'localhost', 'password': '111', 'port': '5432', ...}
+
+    @async_unsafe
+    def get_new_connection(self, conn_params):
+>       connection = Database.connect(**conn_params)
+
+../venv/lib/python3.9/site-packages/django/db/backends/postgresql/base.py:203: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = 'user=igor password=111 host=localhost port=5432 dbname=postgres'
+connection_factory = None, cursor_factory = None
+kwargs = {'database': 'postgres', 'host': 'localhost', 'password': '111', 'port': '5432', ...}
+kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        """
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect("dbname=test user=postgres password=secret")
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database="test", user="postgres", password="secret")
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        """
+        kwasync = {}
+        if 'async' in kwargs:
+            kwasync['async'] = kwargs.pop('async')
+        if 'async_' in kwargs:
+            kwasync['async_'] = kwargs.pop('async_')
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+>       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       django.db.utils.OperationalError: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+E       connection to server at "localhost" (::1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+
+../venv/lib/python3.9/site-packages/psycopg2/__init__.py:122: OperationalError
+
+During handling of the above exception, another exception occurred:
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7ee0>
+
+    @async_unsafe
+    def ensure_connection(self):
+        """Guarantee that a connection to the database is established."""
+        if self.connection is None:
+            with self.wrap_database_errors:
+>               self.connect()
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:244: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7ee0>,)
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7ee0>
+
+    @async_unsafe
+    def connect(self):
+        """Connect to the database. Assume that the connection is closed."""
+        # Check for invalid configurations.
+        self.check_settings()
+        # In case the previous connection was closed while in an atomic block
+        self.in_atomic_block = False
+        self.savepoint_ids = []
+        self.needs_rollback = False
+        # Reset parameters defining when to close the connection
+        max_age = self.settings_dict["CONN_MAX_AGE"]
+        self.close_at = None if max_age is None else time.monotonic() + max_age
+        self.closed_in_transaction = False
+        self.errors_occurred = False
+        # Establish the connection
+        conn_params = self.get_connection_params()
+>       self.connection = self.get_new_connection(conn_params)
+
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:225: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7ee0>, {'database': 'td', 'host': 'localhost', 'password': '111', 'port': '5432', ...})
+kwargs = {}
+
+    @functools.wraps(func)
+    def inner(*args, **kwargs):
+        if not os.environ.get("DJANGO_ALLOW_ASYNC_UNSAFE"):
+            # Detect a running event loop in this thread.
+            try:
+                asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            else:
+                raise SynchronousOnlyOperation(message)
+        # Pass onward.
+>       return func(*args, **kwargs)
+
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <django.db.backends.postgresql.base.DatabaseWrapper object at 0x1118b7ee0>
+conn_params = {'database': 'td', 'host': 'localhost', 'password': '111', 'port': '5432', ...}
+
+    @async_unsafe
+    def get_new_connection(self, conn_params):
+>       connection = Database.connect(**conn_params)
+
+../venv/lib/python3.9/site-packages/django/db/backends/postgresql/base.py:203: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = 'user=igor password=111 host=localhost port=5432 dbname=td'
+connection_factory = None, cursor_factory = None
+kwargs = {'database': 'td', 'host': 'localhost', 'password': '111', 'port': '5432', ...}
+kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        """
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect("dbname=test user=postgres password=secret")
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database="test", user="postgres", password="secret")
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        """
+        kwasync = {}
+        if 'async' in kwargs:
+            kwasync['async'] = kwargs.pop('async')
+        if 'async_' in kwargs:
+            kwasync['async_'] = kwargs.pop('async_')
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+>       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       psycopg2.OperationalError: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+E       connection to server at "localhost" (::1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+
+../venv/lib/python3.9/site-packages/psycopg2/__init__.py:122: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+request = <SubRequest '_django_db_marker' for <Function test_goal_category_get_all>>
+
+    @pytest.fixture(autouse=True)
+    def _django_db_marker(request) -> None:
+        """Implement the django_db marker, internal to pytest-django."""
+        marker = request.node.get_closest_marker("django_db")
+        if marker:
+>           request.getfixturevalue("_django_db_helper")
+
+../venv/lib/python3.9/site-packages/pytest_django/plugin.py:465: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../venv/lib/python3.9/site-packages/pytest_django/fixtures.py:122: in django_db_setup
+    db_cfg = setup_databases(
+../venv/lib/python3.9/site-packages/django/test/utils.py:220: in setup_databases
+    connection.creation.create_test_db(
+../venv/lib/python3.9/site-packages/django/db/backends/base/creation.py:63: in create_test_db
+    self._create_test_db(verbosity, autoclobber, keepdb)
+../venv/lib/python3.9/site-packages/django/db/backends/base/creation.py:199: in _create_test_db
+    with self._nodb_cursor() as cursor:
+/Library/Frameworks/Python.framework/Versions/3.9/lib/python3.9/contextlib.py:117: in __enter__
+    return next(self.gen)
+../venv/lib/python3.9/site-packages/django/db/backends/postgresql/base.py:344: in _nodb_cursor
+    with conn.cursor() as cursor:
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: in inner
+    return func(*args, **kwargs)
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:284: in cursor
+    return self._cursor()
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:260: in _cursor
+    self.ensure_connection()
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: in inner
+    return func(*args, **kwargs)
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:244: in ensure_connection
+    self.connect()
+../venv/lib/python3.9/site-packages/django/db/utils.py:91: in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:244: in ensure_connection
+    self.connect()
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: in inner
+    return func(*args, **kwargs)
+../venv/lib/python3.9/site-packages/django/db/backends/base/base.py:225: in connect
+    self.connection = self.get_new_connection(conn_params)
+../venv/lib/python3.9/site-packages/django/utils/asyncio.py:26: in inner
+    return func(*args, **kwargs)
+../venv/lib/python3.9/site-packages/django/db/backends/postgresql/base.py:203: in get_new_connection
+    connection = Database.connect(**conn_params)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dsn = 'user=igor password=111 host=localhost port=5432 dbname=td'
+connection_factory = None, cursor_factory = None
+kwargs = {'database': 'td', 'host': 'localhost', 'password': '111', 'port': '5432', ...}
+kwasync = {}
+
+    def connect(dsn=None, connection_factory=None, cursor_factory=None, **kwargs):
+        """
+        Create a new database connection.
+    
+        The connection parameters can be specified as a string:
+    
+            conn = psycopg2.connect("dbname=test user=postgres password=secret")
+    
+        or using a set of keyword arguments:
+    
+            conn = psycopg2.connect(database="test", user="postgres", password="secret")
+    
+        Or as a mix of both. The basic connection parameters are:
+    
+        - *dbname*: the database name
+        - *database*: the database name (only as keyword argument)
+        - *user*: user name used to authenticate
+        - *password*: password used to authenticate
+        - *host*: database host address (defaults to UNIX socket if not provided)
+        - *port*: connection port number (defaults to 5432 if not provided)
+    
+        Using the *connection_factory* parameter a different class or connections
+        factory can be specified. It should be a callable object taking a dsn
+        argument.
+    
+        Using the *cursor_factory* parameter, a new default cursor factory will be
+        used by cursor().
+    
+        Using *async*=True an asynchronous connection will be created. *async_* is
+        a valid alias (for Python versions where ``async`` is a keyword).
+    
+        Any other keyword parameter will be passed to the underlying client
+        library: the list of supported parameters depends on the library version.
+    
+        """
+        kwasync = {}
+        if 'async' in kwargs:
+            kwasync['async'] = kwargs.pop('async')
+        if 'async_' in kwargs:
+            kwasync['async_'] = kwargs.pop('async_')
+    
+        dsn = _ext.make_dsn(dsn, **kwargs)
+>       conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+E       django.db.utils.OperationalError: connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+E       connection to server at "localhost" (::1), port 5432 failed: Connection refused
+E       	Is the server running on that host and accepting TCP/IP connections?
+
+../venv/lib/python3.9/site-packages/psycopg2/__init__.py:122: OperationalError
+---------------------------- Captured stderr setup -----------------------------
+Creating test database for alias 'default' ('test_td')...
+=============================== warnings summary ===============================
+tests/test_goals.py::test_goal_category_get_all
+  /Users/igorpotemkin/PycharmProjects/Module_6/todolist/venv/lib/python3.9/site-packages/django/db/backends/postgresql/base.py:323: RuntimeWarning: Normally Django will use a connection to the 'postgres' database to avoid running initialization queries against the production database when it's not needed (for example, when running tests). Django was unable to create a connection to the 'postgres' database and will use the first PostgreSQL database instead.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR test_goals.py::test_goal_category_get_all - django.db.utils.Operational...
+========================= 1 warning, 1 error in 0.54s ==========================
