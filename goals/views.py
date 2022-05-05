@@ -29,8 +29,10 @@ from goals.serializers import (
     CommentCreateSerializer,
     BoardSerializer,
     BoardListSerializer,
-    BoardCreateSerializer
+    BoardCreateSerializer, GoalCategoryReadSerializer, GoalCategoryReadSimpleSerializer
 )
+
+from time import perf_counter
 
 
 class GoalCategoryCreateView(CreateAPIView):
@@ -61,6 +63,8 @@ class GoalCategoryMixin(GenericAPIView):
 
 
 class GoalCategoryListView(ListAPIView, GoalCategoryMixin):
+    # serializer_class = GoalCategoryReadSerializer
+    serializer_class = GoalCategoryReadSimpleSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (
         OrderingFilter,
@@ -71,6 +75,13 @@ class GoalCategoryListView(ListAPIView, GoalCategoryMixin):
     ordering = ["title"]
     search_fields = ["title"]
     filterset_fields = ["board"]
+
+    # def list(self, request, *args, **kwargs):
+    #     start = perf_counter()
+    #     ret = super().list(request, *args, **kwargs)
+    #     elapsed = perf_counter() - start
+    #     print('Время выполнения: [%0.8fs]' % elapsed)
+    #     return ret
 
 
 class GoalCategoryView(RetrieveUpdateDestroyAPIView, GoalCategoryMixin):

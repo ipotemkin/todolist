@@ -53,6 +53,23 @@ class GoalCategorySerializer(GoalCategoryCreateSerializer):
         return value
 
 
+class GoalCategoryReadSerializer(GoalCategoryCreateSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta(GoalCategoryCreateSerializer.Meta):
+        read_only_fields = ("id", "created", "updated", "user", "title", "board")
+
+
+class GoalCategoryReadSimpleSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField(read_only=True)
+    user = serializers.IntegerField(source="user_id", read_only=True)
+    board = serializers.IntegerField(source="board_id", read_only=True)
+    is_deleted = serializers.BooleanField(read_only=True)
+    created = serializers.DateTimeField(read_only=True)
+    updated = serializers.DateTimeField(read_only=True)
+
+
 class GoalCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Goal
