@@ -8,30 +8,29 @@ from core.serializers import UserSerializer
 from goals.models import GoalCategory, Goal, Comment, Board, BoardParticipant
 
 
-# я пытался сделать это в mixin-классе, но не получилось ((
-def check_permissions(serializer):
+class CreatePermissionsModelSerializer(serializers.ModelSerializer):
     """To check permissions while creating objects"""
 
-    obj = serializer.Meta.model(**serializer.validated_data)
-    view = serializer._context['view']
-    request = serializer._context['request']
-    for permission in view.permission_classes:
-        if not permission.has_object_permission(serializer, request, view, obj):
-            raise PermissionDenied
-    return True
+    class Meta:
+        model = None
+
+    def create(self, validated_data):
+        obj = self.Meta.model(**self.validated_data)
+        view = self._context['view']
+        request = self._context['request']
+        for permission in view.permission_classes:
+            if not permission.has_object_permission(self, request, view, obj):
+                raise PermissionDenied
+        return super().create(validated_data)
 
 
-class GoalCategoryCreateSerializer(serializers.ModelSerializer):
+class GoalCategoryCreateSerializer(CreatePermissionsModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = GoalCategory
         read_only_fields = ("id", "created", "updated", "user")
         fields = "__all__"
-
-    def create(self, validated_data):
-        check_permissions(self)
-        return super().create(validated_data)
 
 
 class GoalCategorySerializer(GoalCategoryCreateSerializer):
@@ -53,6 +52,7 @@ class GoalCategorySerializer(GoalCategoryCreateSerializer):
         return value
 
 
+# to speed up performance
 class GoalCategoryReadSerializer(GoalCategoryCreateSerializer):
     user = UserSerializer(read_only=True)
 
@@ -60,6 +60,7 @@ class GoalCategoryReadSerializer(GoalCategoryCreateSerializer):
         read_only_fields = ("id", "created", "updated", "user", "title", "board")
 
 
+# to speed up performance
 class GoalCategoryReadSimpleSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     title = serializers.CharField(read_only=True)
@@ -70,7 +71,7 @@ class GoalCategoryReadSimpleSerializer(serializers.Serializer):
     updated = serializers.DateTimeField(read_only=True)
 
 
-class GoalCreateSerializer(serializers.ModelSerializer):
+class GoalCreateSerializer(CreatePermissionsModelSerializer):
     class Meta:
         model = Goal
         read_only_fields = ("id", "created", "updated")
@@ -80,10 +81,6 @@ class GoalCreateSerializer(serializers.ModelSerializer):
         if value.is_deleted:
             raise ValidationError("not allowed in deleted category")
         return value
-
-    def create(self, validated_data):
-        check_permissions(self)
-        return super().create(validated_data)
 
 
 class GoalSerializer(GoalCreateSerializer):
@@ -98,7 +95,7 @@ class GoalSerializer(GoalCreateSerializer):
         return value
 
 
-class CommentCreateSerializer(serializers.ModelSerializer):
+class CommentCreateSerializer(CreatePermissionsModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
@@ -110,10 +107,6 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         if value.is_deleted:
             raise ValidationError("not allowed on deleted goal")
         return value
-
-    def create(self, validated_data):
-        check_permissions(self)
-        return super().create(validated_data)
 
 
 class CommentSerializer(CommentCreateSerializer):
