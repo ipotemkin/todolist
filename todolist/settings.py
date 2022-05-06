@@ -27,9 +27,10 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
+DJANGO_LOGIN_LOGOUT_DRF = False
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
-# SECRET_KEY = 'django-insecure-qsib7!68w^zbce6)$jf3hyyul0f*j1do91$4gx)v@#bbcs+#7g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
@@ -195,12 +196,13 @@ SWAGGER_SETTINGS = {
       },
    },
    # 'USE_SESSION_AUTH': False,  # отключает Django Login/Logout в Swagger
-   'LOGIN_URL': 'core:login',
-   'LOGOUT_URL': 'core:logout',
+
+   # django login/logout via SWAGGER UI+DRF or Django default + my login.html
+   'LOGIN_URL': 'rest_framework:login' if DJANGO_LOGIN_LOGOUT_DRF else 'core:login',
+   'LOGOUT_URL': 'rest_framework:logout' if DJANGO_LOGIN_LOGOUT_DRF else 'core:logout',
+
    'LOGIN_REDIRECT_URL': '/',
    'LOGOUT_REDIRECT_URL': LOGOUT_REDIRECT_URL,
-   'REFETCH_SCHEMA_WITH_AUTH': True,
-   'REFETCH_SCHEMA_ON_LOGOUT': True,
 }
 
 # LOGGING = {

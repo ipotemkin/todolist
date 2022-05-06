@@ -1,7 +1,7 @@
-from django.urls import path
+from django.urls import path, re_path, include
 
 from goals import views
-
+from todolist.settings import DJANGO_LOGIN_LOGOUT_DRF
 
 urlpatterns = [
     path("goal_category/create", views.GoalCategoryCreateView.as_view()),
@@ -20,3 +20,6 @@ urlpatterns = [
     path("board/list", views.BoardListView.as_view()),
     path("board/<pk>", views.BoardView.as_view()),
 ]
+
+if DJANGO_LOGIN_LOGOUT_DRF:
+    urlpatterns += [re_path(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))]

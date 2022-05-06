@@ -17,6 +17,7 @@ class FieldIsDeletedMixin(models.Model):
 
     is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
 
+    # TODO to completely implement or remove
     # def delete(self, using=None, keep_parents=False):
     #     self.is_deleted = True
     #     self.save()
@@ -29,7 +30,6 @@ class GoalCategory(DatesModelMixin, FieldIsDeletedMixin):
 
     title = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
-    # is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
     board = models.ForeignKey(
         'Board', verbose_name="Доска", on_delete=models.PROTECT, related_name="categories"
     )
@@ -57,8 +57,6 @@ class Goal(DatesModelMixin, FieldIsDeletedMixin):
 
     title = models.CharField(verbose_name="Название", max_length=255)
     description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
-    # user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
-    # is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
     category = models.ForeignKey(
         GoalCategory,
         verbose_name="Категория",
@@ -105,7 +103,6 @@ class Board(DatesModelMixin, FieldIsDeletedMixin):
         verbose_name_plural = "Доски"
 
     title = models.CharField(verbose_name="Название", max_length=255)
-    # is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
 
     def __str__(self):
         return self.title
