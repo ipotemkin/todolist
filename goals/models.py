@@ -17,6 +17,10 @@ class FieldIsDeletedMixin(models.Model):
 
     is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
 
+    # def delete(self, using=None, keep_parents=False):
+    #     self.is_deleted = True
+    #     self.save()
+
 
 class GoalCategory(DatesModelMixin, FieldIsDeletedMixin):
     class Meta:
@@ -55,7 +59,12 @@ class Goal(DatesModelMixin, FieldIsDeletedMixin):
     description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
     # user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
     # is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
-    category = models.ForeignKey(GoalCategory, verbose_name="Категория", on_delete=models.PROTECT)
+    category = models.ForeignKey(
+        GoalCategory,
+        verbose_name="Категория",
+        on_delete=models.PROTECT,
+        related_name="goals"
+    )
     status = models.PositiveSmallIntegerField(
         verbose_name="Статус",
         choices=Status.choices,
