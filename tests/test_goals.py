@@ -1,5 +1,7 @@
 import pytest
 
+from core.models import User
+from goals.models import GoalCategory, Board, BoardParticipant
 from tests.factory import GoalCategoryFactory
 
 from goals.serializers import GoalCategorySerializer
@@ -20,25 +22,68 @@ new_ad = {**new_ad_base, **new_ad_ext}
 
 
 # @pytest.mark.django_db
-# def test_root(client):
-#     response = client.get("/")
-#     assert response.status_code == 200
-#     assert response.json() == {'status': 'ok'}
+def test_healthcheck(client):
+    response = client.get("/health/")
+    assert response.status_code == 200
+    assert response.json() == {'status': 'ok'}
 
 
 @pytest.mark.django_db
-def test_goal_category_get_all(client):
-    goal_categories = GoalCategoryFactory.create_batch(2)
-    expected_ad_list_response = {
-        "count": 2,
-        "next": None,
-        "previous": None,
-        "results": GoalCategorySerializer(goal_categories, many=True).data
-    }
+def test_goal_category_get_all(client, logged_in_user):
+    # goal_categories = GoalCategoryFactory.create_batch(2)
+    board = Board.objects.create(title="Testing board")
+    user = User.objects.get(username="james")
+    goal_category_1 = GoalCategory.objects.create(title="Testing category", user=user, board=board)
+    BoardParticipant.objects.create(board=board, user=user)
+    goal_category_2 = GoalCategory.objects.create(title="Testing category 2", user=user, board=board)
 
+    # expected_category_list_response = {
+    #     "count": 2,
+    #     "next": None,
+    #     "previous": None,
+    #     "results": GoalCategorySerializer(goal_categories, many=True).data
+    # }
+    expected_response = [
+        GoalCategorySerializer(goal_category_1).data,
+        GoalCategorySerializer(goal_category_2).data,
+    ]
     response = client.get("/goals/goal_category/list")
     assert response.status_code == 200
-    # assert response.data == expected_ad_list_response
+    # assert response.data == expected_category_list_response
+    assert response.json() == expected_response
+
+
+@pytest.mark.django_db
+def test_goal_category_get_one(client, logged_in_user, category_and_board):
+    category, board = category_and_board
+    expected_response = GoalCategorySerializer(category).data
+    response = client.get(f"/goals/goal_category/{category.id}")
+    assert response.status_code == 200
+    assert response.json() == expected_response
+
+
+@pytest.mark.django_db
+def test_goal_category_partial_update(client, logged_in_user, category_and_board):
+    category, board = category_and_board
+
+    new_category_title = "New testing category"
+
+    data = {"title": new_category_title}
+
+    expected_response = GoalCategorySerializer(category).data
+    expected_response["title"] = new_category_title
+
+    response = client.patch(
+        f"/goals/goal_category/{category.id}",
+        data,
+        content_type="application/json"
+    )
+    assert response.status_code == 200
+
+    response_json = response.json()
+    response_json.pop("updated")
+    expected_response.pop("updated")
+    assert response_json == expected_response
 
 
 # @pytest.mark.django_db

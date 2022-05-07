@@ -9,6 +9,9 @@ class UserFactory(factory.django.DjangoModelFactory):
         model = User
 
     username = factory.Faker("name")
+    # password = "qwerty123"
+
+    # username = "james"
     password = "qwerty123"
 
 
@@ -24,8 +27,12 @@ class GoalCategoryFactory(factory.django.DjangoModelFactory):
         model = GoalCategory
 
     title = "Testing category"
-    user = factory.SubFactory(UserFactory)
+    # user = User.objects.create_user(username="james", password="qwerty123")
+    user_id = 1
+    # user = factory.SubFactory(UserFactory)
+    # user_id = User.objects.filter(username="james").first().id
     board = factory.SubFactory(BoardFactory)
+    # is_deleted = False
 
 
 # class CatFactory(factory.django.DjangoModelFactory):

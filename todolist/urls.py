@@ -5,6 +5,7 @@ from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 
 from todolist.settings import NO_FRONT
+from todolist.views import health_check
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -22,6 +23,7 @@ urlpatterns = [
     path('oauth/', include('social_django.urls', namespace='social')),
     path('core/', include('core.urls')),
     path('goals/', include('goals.urls')),
+    path('health/', health_check),  # namespace='health_check'),
 
     re_path(
         '' if NO_FRONT else r'^swagger/$',

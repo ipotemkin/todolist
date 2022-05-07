@@ -29,10 +29,12 @@ from goals.serializers import (
     CommentCreateSerializer,
     BoardSerializer,
     BoardListSerializer,
-    BoardCreateSerializer, GoalCategoryReadSerializer, GoalCategoryReadSimpleSerializer
+    BoardCreateSerializer,
+    GoalCategoryReadSerializer,
+    GoalCategoryReadSimpleSerializer
 )
 
-from time import perf_counter
+# from time import perf_counter
 
 
 class GoalCategoryCreateView(CreateAPIView):
@@ -63,8 +65,8 @@ class GoalCategoryMixin(GenericAPIView):
 
 
 class GoalCategoryListView(ListAPIView, GoalCategoryMixin):
-    # serializer_class = GoalCategoryReadSerializer
-    serializer_class = GoalCategoryReadSimpleSerializer
+    serializer_class = GoalCategoryReadSerializer
+    # serializer_class = GoalCategoryReadSimpleSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (
         OrderingFilter,
@@ -160,7 +162,7 @@ class CommentMixin(GenericAPIView):
 
             .all()  # 14 queries
         )
-        # Количество заросов было оптимизировано с 14 до 12,
+        # Количество запросов было оптимизировано с 14 до 12,
         # после замены board на board_id в permissions
         # количество запросов удалось сократить до 10.
         # Это количество запросов при открытии списка комментариев цели через фронт.

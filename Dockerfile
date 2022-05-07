@@ -5,6 +5,7 @@ WORKDIR /code
 # install psycopg2 dependencies
 RUN apt update \
     && apt install -y \
+    curl \
 #     --no-install-recommends \
 #    postgresql \
     gcc \
