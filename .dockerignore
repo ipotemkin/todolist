@@ -7,3 +7,15 @@ Dockerfile
 .idea/
 __pycache__/
 .env
+nginx
+tests
+*.yml
+*.yaml
+pytest.ini
+requirements-dev.txt
+tox.ini
+README.md
+todo.py
+.pytest_cache
+backup
+.github
