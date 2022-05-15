@@ -1,12 +1,37 @@
 import os
+from enum import Enum, unique, auto
+from typing import Optional
 
 from django.core.management import BaseCommand
+from pydantic import BaseModel
 
 from bot.models import TgUser
 from bot.tg.client import TgClient
 from bot.tg.dc import Message
-from goals.models import Goal
+from goals.models import Goal, GoalCategory
 from todolist import settings
+
+
+class NewGoal(BaseModel):
+    cat_id: Optional[int] = None
+    goal_title: Optional[str] = None
+
+    def complete(self) -> bool:
+        return None not in (self.cat_id, self.goal_title)
+
+
+@unique
+class StateEnum(Enum):
+    CREATE_CATEGORY = auto()
+    CHOSEN_CATEGORY = auto()
+
+
+class FSMData:
+    state: StateEnum
+    goal: NewGoal
+
+
+FSM_STATES: dict[int, FSMData] = dict()
 
 
 class Command(BaseCommand):
@@ -41,13 +66,37 @@ class Command(BaseCommand):
     def handle_goal_list(self, msg: Message, tg_user: TgUser):
         resp_goals: list[str] = [
             f'#{goal.id} {goal.title} срок:{goal.due_date}'
-            for goal in Goal.objects.filter(category__user_id=tg_user.user_id)
+            for goal in Goal.objects.filter(
+                category__board__participants__user_id=tg_user.user_id,
+                is_deleted=False
+            )
         ]
-        self.tg_client.send_message(chat_id=msg.chat.id, text='\n'.join(resp_goals) or '[no goals found]')
+        self.tg_client.send_message(
+            chat_id=msg.chat.id,
+            text='\n'.join(resp_goals) or '[no goals found]'
+        )
+
+    def handle_category_list(self, msg: Message, tg_user: TgUser):
+        resp_categories: list[str] = [
+            f'#{category.id} {category.title}'
+            for category in GoalCategory.objects.filter(
+                board__participants__user_id=tg_user.user_id,
+                is_deleted=False
+            )
+        ]
+        self.tg_client.send_message(
+            chat_id=msg.chat.id,
+            text='\n'.join(resp_categories) or '[no categories found]'
+        )
 
     def handle_verified_user(self, msg: Message, tg_user: TgUser):
         if msg.text == '/goals':
             self.handle_goal_list(msg=msg, tg_user=tg_user)
+        elif msg.text == '/create_goal':
+            self.handle_category_list(msg=msg, tg_user=tg_user)
+
+        elif msg.text == '/categories':
+            self.handle_category_list(msg=msg, tg_user=tg_user)
         elif msg.text.startswith('/'):
             self.tg_client.send_message(chat_id=msg.chat.id, text='[unknown command]')
 
