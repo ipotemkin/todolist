@@ -7,6 +7,7 @@ x-common-variables: &common-variables
   DB_HOST: postgres
   SECRET_KEY: ${SECRET_KEY}
   DEBUG: ${DEBUG}
+  BOT_TOKEN: ${BOT_TOKEN}
 
 services:
 
@@ -60,6 +61,22 @@ services:
 
 #    volumes:
 #      - api_media:/opt/app/media
+
+  bot:
+    build:
+      context: .
+    volumes:
+      - .:/code
+    environment: *common-variables
+#      <<: *common-variables
+#      DB_HOST: postgres
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate
+            python3 manage.py runbot"
 
   postgres:
     image: postgres:alpine

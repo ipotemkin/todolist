@@ -24,6 +24,7 @@ urlpatterns = [
     path('core/', include('core.urls')),
     path('goals/', include('goals.urls')),
     path('health/', health_check),  # namespace='health_check'),
+    path('bot/', include('bot.urls', namespace='bot')),
 
     re_path(
         '' if NO_FRONT else r'^swagger/$',
