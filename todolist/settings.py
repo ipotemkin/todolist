@@ -206,6 +206,9 @@ SWAGGER_SETTINGS = {
    'LOGOUT_REDIRECT_URL': LOGOUT_REDIRECT_URL,
 }
 
+BOT_TOKEN = env.str('BOT_TOKEN')
+
+
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,
