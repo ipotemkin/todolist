@@ -67,6 +67,26 @@ class Command(BaseCommand):
             & and_
         )
 
+    @staticmethod
+    def _get_category_query(tg_user: TgUser, and_: Q = Q()) -> Q:
+        return (
+            Q(board__participants__user_id=tg_user.user_id)
+            & Q(is_deleted=False)
+            & and_
+        )
+
+    @staticmethod
+    def _get_board_query(tg_user: TgUser, and_: Q = Q()) -> Q:
+        return (
+            Q(participants__user_id=tg_user.user_id)
+            & Q(is_deleted=False)
+            & (
+                Q(participants__role=BoardParticipant.Role.owner)
+                | Q(participants__role=BoardParticipant.Role.writer)
+            )
+           & and_
+        )
+
     def handle(self, *args, **options):
         offset = 0
 
@@ -92,10 +112,7 @@ class Command(BaseCommand):
     def handle_goal_list(self, msg: Message, tg_user: TgUser):
         resp_goals: list[str] = [
             f'#{goal.id} {goal.title} срок:{goal.due_date} статус: {Goal.Status(goal.status).label}'
-            for goal in Goal.objects.filter(
-                category__board__participants__user_id=tg_user.user_id,
-                is_deleted=False
-            )
+            for goal in Goal.objects.filter(self._get_goal_query(tg_user))
         ]
 
         text = ''
@@ -123,10 +140,7 @@ class Command(BaseCommand):
     def handle_category_list(self, msg: Message, tg_user: TgUser):
         resp_categories: list[str] = [
             f'#{category.id} {category.title}'
-            for category in GoalCategory.objects.filter(
-                board__participants__user_id=tg_user.user_id,
-                is_deleted=False
-            )
+            for category in GoalCategory.objects.filter(self._get_category_query(tg_user))
         ]
 
         text = ''
@@ -148,17 +162,9 @@ class Command(BaseCommand):
         )
 
     def handle_board_list(self, msg: Message, tg_user: TgUser):
-        query = (
-            Q(participants__user_id=tg_user.user_id)
-            & Q(is_deleted=False)
-            & (
-                Q(participants__role=BoardParticipant.Role.owner)
-                | Q(participants__role=BoardParticipant.Role.writer)
-            )
-        )
         resp_boards: list[str] = [
             f'#{board.id} {board.title}'
-            for board in Board.objects.filter(query)
+            for board in Board.objects.filter(self._get_board_query(tg_user))
         ]
 
         text = ''
@@ -187,9 +193,7 @@ class Command(BaseCommand):
         if msg.text.isdigit():
             cat_id = int(msg.text)
             if GoalCategory.objects.filter(
-                board__participants__user_id=tg_user.user_id,
-                is_deleted=False,
-                id=cat_id
+                self._get_category_query(tg_user, and_=Q(id=cat_id))
             ).count():
                 FSM_STATES[tg_user.chat_id].goal.cat_id = cat_id
                 self.tg_client.send_message(chat_id=msg.chat.id, text='[set title]')
@@ -201,16 +205,7 @@ class Command(BaseCommand):
     def handle_save_selected_board(self, msg: Message, tg_user: TgUser):
         if msg.text.isdigit():
             board_id = int(msg.text)
-            query = (
-                    Q(participants__user_id=tg_user.user_id)
-                    & Q(is_deleted=False)
-                    & (
-                        Q(participants__role=BoardParticipant.Role.owner)
-                        | Q(participants__role=BoardParticipant.Role.writer)
-                    )
-                    & Q(id=board_id)
-            )
-            if Board.objects.filter(query).count():
+            if Board.objects.filter(self._get_board_query(tg_user, and_=Q(id=board_id))).count():
                 FSM_STATES[tg_user.chat_id].board_id = board_id
                 self.tg_client.send_message(chat_id=msg.chat.id, text='[set title for a category]')
                 FSM_STATES[tg_user.chat_id].state = StateEnum.CHOSEN_BOARD
@@ -255,18 +250,15 @@ class Command(BaseCommand):
     def handle_delete_selected_goal(self, msg: Message, tg_user: TgUser):
         if msg.text.isdigit():
             goal_id = int(msg.text)
-            if goal := Goal.objects.filter(
-                category__board__participants__user_id=tg_user.user_id,
-                is_deleted=False,
-                id=goal_id
-            ).first():
+            goal = Goal.objects.filter(self._get_goal_query(tg_user, and_=Q(id=goal_id))).first()
+            if goal:
                 goal.is_deleted = True
                 goal.save(update_fields=['is_deleted'])
                 self.tg_client.send_message(chat_id=msg.chat.id, text='[goal has been deleted]')
                 self._clean_fsm_states(tg_user.chat_id)
                 return
 
-        self.tg_client.send_message(chat_id=msg.chat.id, text='[invalid category id]')
+        self.tg_client.send_message(chat_id=msg.chat.id, text='[invalid goal id]')
 
     def handle_verified_user(self, msg: Message, tg_user: TgUser):
         if msg.text == '/goals':
