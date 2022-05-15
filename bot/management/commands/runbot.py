@@ -5,6 +5,7 @@ from django.core.management import BaseCommand
 from bot.models import TgUser
 from bot.tg.client import TgClient
 from bot.tg.dc import Message
+from goals.models import Goal
 from todolist import settings
 
 
@@ -37,6 +38,19 @@ class Command(BaseCommand):
             text=f'[verification code] {code}'
         )
 
+    def handle_goal_list(self, msg: Message, tg_user: TgUser):
+        resp_goals: list[str] = [
+            f'#{goal.id} {goal.title} срок:{goal.due_date}'
+            for goal in Goal.objects.filter(category__user_id=tg_user.user_id)
+        ]
+        self.tg_client.send_message(chat_id=msg.chat.id, text='\n'.join(resp_goals) or '[no goals found]')
+
+    def handle_verified_user(self, msg: Message, tg_user: TgUser):
+        if msg.text == '/goals':
+            self.handle_goal_list(msg=msg, tg_user=tg_user)
+        elif msg.text.startswith('/'):
+            self.tg_client.send_message(chat_id=msg.chat.id, text='[unknown command]')
+
     def handle_message(self, msg: Message):
         tg_user, created = TgUser.objects.get_or_create(
             chat_id=msg.chat.id,
@@ -49,7 +63,7 @@ class Command(BaseCommand):
         elif not tg_user.user:
             self.handle_user_wo_verification(msg=msg, tg_user=tg_user)
         else:
-            ...
+            self.handle_verified_user(msg=msg, tg_user=tg_user)
 
         # if TgUser.objects.filter(chat_id=msg.chat.id).exists():
         #     self.tg_client.send_message(chat_id=msg.chat.id, text='[exists]')

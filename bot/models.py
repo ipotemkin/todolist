@@ -14,6 +14,7 @@ class TgUser(models.Model):
     )
     user = models.ForeignKey(
         User,
+        verbose_name="Пользователь todolist",
         on_delete=models.PROTECT,
         null=True,
         blank=True,

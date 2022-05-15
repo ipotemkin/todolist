@@ -50,9 +50,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
     command: >
-      sh -c "python manage.py migrate
-            python3 manage.py runserver 0.0.0.0:8000"
+      sh -c "python3 manage.py runserver 0.0.0.0:8000"
     healthcheck:
       test: curl -sS http://127.0.0.1:8000/health/ || exit 1
       interval: 15s
@@ -68,15 +69,26 @@ services:
     volumes:
       - .:/code
     environment: *common-variables
-#      <<: *common-variables
-#      DB_HOST: postgres
     restart: always
     depends_on:
       postgres:
         condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
     command: >
-      sh -c "python manage.py migrate
-            python3 manage.py runbot"
+      sh -c "python3 manage.py runbot"
+
+  migrations:
+    build:
+      context: .
+    volumes:
+      - .:/code
+    environment: *common-variables
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate"
 
   postgres:
     image: postgres:alpine
