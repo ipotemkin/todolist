@@ -19,6 +19,10 @@ class TgUser(models.Model):
         blank=True,
         default=None
     )
+    verification_code = models.CharField(
+        verbose_name="Код подтверждения",
+        max_length=50, null=True, blank=True, default=None
+    )
 
     def __str__(self):
         if self.username:

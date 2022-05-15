@@ -26,7 +26,8 @@ services:
 #    image: sermalenk/skypro-front:base
 #    image: sermalenk/skypro-front:lesson_35
 #    image: sermalenk/skypro-front:lesson_36
-    image: sermalenk/skypro-front:lesson_37
+#    image: sermalenk/skypro-front:lesson_37
+    image: sermalenk/skypro-front:lesson_38
     ports:
       - '8080:80'
     restart: always

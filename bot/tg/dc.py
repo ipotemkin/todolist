@@ -33,9 +33,9 @@ class UpdateObj(BaseModel):
 
 class GetUpdatesResponse(BaseModel):
     ok: bool
-    result: List[UpdateObj]  # todo
+    result: List[UpdateObj]
 
 
 class SendMessageResponse(BaseModel):
     ok: bool
-    result: Message  # todo
+    result: Message

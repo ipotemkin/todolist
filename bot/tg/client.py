@@ -16,6 +16,6 @@ class TgClient:
         return GetUpdatesResponse(**resp.json())
 
     def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
-        url = self.get_url('sendMessages')
+        url = self.get_url('sendMessage')
         resp = requests.post(url, json={'chat_id': chat_id, 'text': text})
         return SendMessageResponse(**resp.json())
