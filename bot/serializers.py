@@ -6,7 +6,7 @@ from bot.models import TgUser
 
 
 class TgUserSerializer(serializers.ModelSerializer):
-    verification_code = serializers.CharField(write_only=True, required=False)
+    verification_code = serializers.CharField(write_only=True)
     tg_id = serializers.SlugField(source='chat_id', read_only=True)
 
     class Meta:
@@ -15,7 +15,7 @@ class TgUserSerializer(serializers.ModelSerializer):
         read_only_fields = ('tg_id', 'username', 'user_id')
 
     def validate(self, attrs):
-        verification_code = attrs.get('verification_code')
+        verification_code = attrs.pop('verification_code')
         tg_user_name = cache.get(verification_code)
 
         if tg_user_name and (tg_user := TgUser.objects.filter(username=tg_user_name).first()):
