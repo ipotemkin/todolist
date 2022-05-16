@@ -19,3 +19,4 @@ todo.py
 .pytest_cache
 backup
 .github
+swagger

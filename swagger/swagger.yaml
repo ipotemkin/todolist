@@ -1,0 +1,1231 @@
+swagger: '2.0'
+info:
+  title: Todolist API
+  description: API description
+  version: v1
+host: 51.250.72.80:8002
+schemes:
+  - http
+basePath: /
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+  - Basic: []
+paths:
+  /bot/verify:
+    patch:
+      operationId: bot_verify_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TgUser'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/TgUser'
+      tags:
+        - bot
+    parameters: []
+  /core/login:
+    post:
+      operationId: core_login_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Login'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/LoginResponse'
+      tags:
+        - core
+    parameters: []
+  /core/profile:
+    get:
+      operationId: core_profile_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - core
+    put:
+      operationId: core_profile_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - core
+    patch:
+      operationId: core_profile_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - core
+    delete:
+      operationId: core_profile_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - core
+    parameters: []
+  /core/signup:
+    post:
+      operationId: core_signup_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateUser'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/CreateUser'
+      tags:
+        - core
+    parameters: []
+  /core/update_password:
+    put:
+      operationId: core_update_password_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdatePassword'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UpdatePassword'
+      tags:
+        - core
+    patch:
+      operationId: core_update_password_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdatePassword'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UpdatePassword'
+      tags:
+        - core
+    parameters: []
+  /goals/board/create:
+    post:
+      operationId: goals_board_create_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BoardCreate'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/BoardCreate'
+      tags:
+        - goals
+    parameters: []
+  /goals/board/list:
+    get:
+      operationId: goals_board_list_list
+      description: ''
+      parameters:
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          description: The initial index from which to return the results.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/BoardList'
+      tags:
+        - goals
+    parameters: []
+  /goals/board/{id}:
+    get:
+      operationId: goals_board_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Board'
+      tags:
+        - goals
+    put:
+      operationId: goals_board_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Board'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Board'
+      tags:
+        - goals
+    patch:
+      operationId: goals_board_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Board'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Board'
+      tags:
+        - goals
+    delete:
+      operationId: goals_board_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - goals
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /goals/goal/create:
+    post:
+      operationId: goals_goal_create_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GoalCreate'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/GoalCreate'
+      tags:
+        - goals
+    parameters: []
+  /goals/goal/list:
+    get:
+      operationId: goals_goal_list_list
+      description: ''
+      parameters:
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: search
+          in: query
+          description: A search term.
+          required: false
+          type: string
+        - name: due_date__lte
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: due_date__gte
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: category
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: category__in
+          in: query
+          description: Несколько значений могут быть разделены запятыми.
+          required: false
+          type: string
+        - name: status
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: status__in
+          in: query
+          description: Несколько значений могут быть разделены запятыми.
+          required: false
+          type: number
+        - name: priority
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: priority__in
+          in: query
+          description: Несколько значений могут быть разделены запятыми.
+          required: false
+          type: number
+        - name: limit
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          description: The initial index from which to return the results.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Goal'
+      tags:
+        - goals
+    parameters: []
+  /goals/goal/{id}:
+    get:
+      operationId: goals_goal_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Goal'
+      tags:
+        - goals
+    put:
+      operationId: goals_goal_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Goal'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Goal'
+      tags:
+        - goals
+    patch:
+      operationId: goals_goal_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Goal'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Goal'
+      tags:
+        - goals
+    delete:
+      operationId: goals_goal_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - goals
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /goals/goal_category/create:
+    post:
+      operationId: goals_goal_category_create_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GoalCategoryCreate'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/GoalCategoryCreate'
+      tags:
+        - goals
+    parameters: []
+  /goals/goal_category/list:
+    get:
+      operationId: goals_goal_category_list_list
+      description: ''
+      parameters:
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: search
+          in: query
+          description: A search term.
+          required: false
+          type: string
+        - name: board
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          description: The initial index from which to return the results.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/GoalCategoryRead'
+      tags:
+        - goals
+    parameters: []
+  /goals/goal_category/{id}:
+    get:
+      operationId: goals_goal_category_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/GoalCategory'
+      tags:
+        - goals
+    put:
+      operationId: goals_goal_category_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GoalCategory'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/GoalCategory'
+      tags:
+        - goals
+    patch:
+      operationId: goals_goal_category_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/GoalCategory'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/GoalCategory'
+      tags:
+        - goals
+    delete:
+      operationId: goals_goal_category_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - goals
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /goals/goal_comment/create:
+    post:
+      operationId: goals_goal_comment_create_create
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CommentCreate'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/CommentCreate'
+      tags:
+        - goals
+    parameters: []
+  /goals/goal_comment/list:
+    get:
+      operationId: goals_goal_comment_list_list
+      description: ''
+      parameters:
+        - name: ordering
+          in: query
+          description: Which field to use when ordering the results.
+          required: false
+          type: string
+        - name: goal
+          in: query
+          description: ''
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: Number of results to return per page.
+          required: false
+          type: integer
+        - name: offset
+          in: query
+          description: The initial index from which to return the results.
+          required: false
+          type: integer
+      responses:
+        '200':
+          description: ''
+          schema:
+            required:
+              - count
+              - results
+            type: object
+            properties:
+              count:
+                type: integer
+              next:
+                type: string
+                format: uri
+                x-nullable: true
+              previous:
+                type: string
+                format: uri
+                x-nullable: true
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Comment'
+      tags:
+        - goals
+    parameters: []
+  /goals/goal_comment/{id}:
+    get:
+      operationId: goals_goal_comment_read
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Comment'
+      tags:
+        - goals
+    put:
+      operationId: goals_goal_comment_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Comment'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Comment'
+      tags:
+        - goals
+    patch:
+      operationId: goals_goal_comment_partial_update
+      description: ''
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Comment'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Comment'
+      tags:
+        - goals
+    delete:
+      operationId: goals_goal_comment_delete
+      description: ''
+      parameters: []
+      responses:
+        '204':
+          description: ''
+      tags:
+        - goals
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+definitions:
+  TgUser:
+    required:
+      - verification_code
+    type: object
+    properties:
+      tg_id:
+        title: Tg id
+        type: string
+        format: slug
+        pattern: ^[-a-zA-Z0-9_]+$
+        readOnly: true
+        minLength: 1
+      username:
+        title: Telegram user_ud
+        type: string
+        readOnly: true
+        minLength: 1
+        x-nullable: true
+      verification_code:
+        title: Verification code
+        type: string
+        minLength: 1
+      user_id:
+        title: User id
+        type: string
+        readOnly: true
+  Login:
+    required:
+      - username
+      - password
+    type: object
+    properties:
+      username:
+        title: Username
+        type: string
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+  LoginResponse:
+    required:
+      - username
+    type: object
+    properties:
+      username:
+        title: Username
+        type: string
+        minLength: 1
+  User:
+    required:
+      - username
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      username:
+        title: Имя пользователя
+        description: Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_.
+        type: string
+        pattern: ^[\w.@+-]+$
+        maxLength: 150
+        minLength: 1
+      first_name:
+        title: Имя
+        type: string
+        maxLength: 150
+      last_name:
+        title: Фамилия
+        type: string
+        maxLength: 150
+      email:
+        title: Адрес электронной почты
+        type: string
+        format: email
+        maxLength: 254
+  CreateUser:
+    required:
+      - username
+      - password
+      - password_repeat
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      username:
+        title: Имя пользователя
+        description: Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_.
+        type: string
+        pattern: ^[\w.@+-]+$
+        maxLength: 150
+        minLength: 1
+      first_name:
+        title: Имя
+        type: string
+        maxLength: 150
+      last_name:
+        title: Фамилия
+        type: string
+        maxLength: 150
+      email:
+        title: Адрес электронной почты
+        type: string
+        format: email
+        maxLength: 254
+      password:
+        title: Password
+        type: string
+        minLength: 1
+      password_repeat:
+        title: Password repeat
+        type: string
+        minLength: 1
+  UpdatePassword:
+    required:
+      - old_password
+      - new_password
+    type: object
+    properties:
+      old_password:
+        title: Old password
+        type: string
+        minLength: 1
+      new_password:
+        title: New password
+        type: string
+        minLength: 1
+  BoardCreate:
+    required:
+      - title
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        maxLength: 255
+        minLength: 1
+  BoardList:
+    required:
+      - title
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        maxLength: 255
+        minLength: 1
+  BoardParticipant:
+    required:
+      - role
+      - user
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      role:
+        title: Role
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+      user:
+        title: User
+        type: string
+        pattern: ^[\w.@+-]+$
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      board:
+        title: Доска
+        type: integer
+        readOnly: true
+  Board:
+    required:
+      - participants
+      - title
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      participants:
+        type: array
+        items:
+          $ref: '#/definitions/BoardParticipant'
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        maxLength: 255
+        minLength: 1
+  GoalCreate:
+    required:
+      - title
+      - due_date
+      - category
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        maxLength: 255
+        minLength: 1
+      description:
+        title: Описание
+        type: string
+        maxLength: 255
+        x-nullable: true
+      status:
+        title: Статус
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+          - 4
+      priority:
+        title: Приоритет
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+          - 4
+      due_date:
+        title: Дата дедлайна
+        type: string
+        format: date
+      category:
+        title: Категория
+        type: integer
+  Goal:
+    required:
+      - title
+      - due_date
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      board:
+        title: Board
+        type: integer
+        readOnly: true
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        maxLength: 255
+        minLength: 1
+      description:
+        title: Описание
+        type: string
+        maxLength: 255
+        x-nullable: true
+      status:
+        title: Статус
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+          - 4
+      priority:
+        title: Приоритет
+        type: integer
+        enum:
+          - 1
+          - 2
+          - 3
+          - 4
+      due_date:
+        title: Дата дедлайна
+        type: string
+        format: date
+      category:
+        title: Категория
+        type: integer
+        readOnly: true
+  GoalCategoryCreate:
+    required:
+      - title
+      - board
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        maxLength: 255
+        minLength: 1
+      board:
+        title: Доска
+        type: integer
+  GoalCategoryRead:
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      user:
+        $ref: '#/definitions/User'
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        readOnly: true
+        minLength: 1
+      board:
+        title: Доска
+        type: integer
+        readOnly: true
+  GoalCategory:
+    required:
+      - title
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      user:
+        $ref: '#/definitions/User'
+      board:
+        title: Board
+        type: integer
+        readOnly: true
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      is_deleted:
+        title: Удалена
+        type: boolean
+      title:
+        title: Название
+        type: string
+        maxLength: 255
+        minLength: 1
+  CommentCreate:
+    required:
+      - text
+      - goal
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      text:
+        title: Текст комментария
+        type: string
+        minLength: 1
+      goal:
+        title: Цель
+        type: integer
+  Comment:
+    required:
+      - text
+    type: object
+    properties:
+      id:
+        title: ID
+        type: integer
+        readOnly: true
+      user:
+        $ref: '#/definitions/User'
+      created:
+        title: Дата создания
+        type: string
+        format: date-time
+        readOnly: true
+      updated:
+        title: Дата последнего обновления
+        type: string
+        format: date-time
+        readOnly: true
+      text:
+        title: Текст комментария
+        type: string
+        minLength: 1
+      goal:
+        title: Цель
+        type: integer
+        readOnly: true
