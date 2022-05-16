@@ -124,9 +124,6 @@ class Command(BaseCommand):
 
     def handle_user_wo_verification(self, msg: Message, tg_user: TgUser):
         code: str = self._gen_verification_code()
-        # tg_user.verification_code = code
-        # tg_user.save(update_fields=['verification_code'])
-
         cache.set(code, tg_user.username, timeout=60*3)
 
         self.tg_client.send_message(
