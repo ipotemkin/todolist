@@ -1,4 +1,4 @@
-version: "3.3"
+version: "2.1"
 
 services:
 
@@ -28,15 +28,16 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      migrations:
-        condition: service_completed_successfully
+#      migrations:
+#        condition: service_completed_successfully
     healthcheck:
       test: curl -sS http://127.0.0.1:8000/health/ || exit 1
       interval: 15s
       timeout: 5s
       retries: 5
     command: >
-      sh -c "python3 manage.py runserver 0.0.0.0:8000"
+      sh -c "python3 manage.py migrate
+            python3 manage.py runserver 0.0.0.0:8000"
 
   bot:
     image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
@@ -54,28 +55,29 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      migrations:
-        condition: service_completed_successfully
+#      migrations:
+#        condition: service_completed_successfully
     command: >
-      sh -c "python3 manage.py runbot"
+      sh -c "python3 manage.py migrate
+            python3 manage.py runbot"
 
-  migrations:
-    image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-    environment:
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_USER: ${DB_USER}
-      DB_NAME: ${DB_NAME}
-      DB_HOST: ${DB_HOST}
-      SECRET_KEY: ${SECRET_KEY}
-      DEBUG: 'TRUE'
-      SOCIAL_AUTH_VK_OAUTH2_KEY: ${SOCIAL_AUTH_VK_OAUTH2_KEY}
-      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${SOCIAL_AUTH_VK_OAUTH2_SECRET}
-      BOT_TOKEN: ${BOT_TOKEN}
-    depends_on:
-      postgres:
-        condition: service_healthy
-    command: >
-      sh -c "python3 manage.py migrate"
+#  migrations:
+#    image: ipotemkin/todolist_api:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+#    environment:
+#      DB_PASSWORD: ${DB_PASSWORD}
+#      DB_USER: ${DB_USER}
+#      DB_NAME: ${DB_NAME}
+#      DB_HOST: ${DB_HOST}
+#      SECRET_KEY: ${SECRET_KEY}
+#      DEBUG: 'TRUE'
+#      SOCIAL_AUTH_VK_OAUTH2_KEY: ${SOCIAL_AUTH_VK_OAUTH2_KEY}
+#      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${SOCIAL_AUTH_VK_OAUTH2_SECRET}
+#      BOT_TOKEN: ${BOT_TOKEN}
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    command: >
+#      sh -c "python3 manage.py migrate"
 
   postgres:
     image: postgres:12.4-alpine
