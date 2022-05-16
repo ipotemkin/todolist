@@ -3,7 +3,7 @@ version: "3.3"
 services:
 
   front:
-    image: sermalenk/skypro-front:lesson_37
+    image: sermalenk/skypro-front:lesson_38
     ports:
       - '8002:80'
     depends_on:
