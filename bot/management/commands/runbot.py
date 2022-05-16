@@ -357,7 +357,7 @@ class Command(BaseCommand):
         tg_user, created = TgUser.objects.get_or_create(
             chat_id=msg.chat.id,
             defaults={
-                'username': msg.from_.username
+                'username': msg.from_.username or msg.from_.first_name + msg.from_.last_name
             }
         )
         if created:
