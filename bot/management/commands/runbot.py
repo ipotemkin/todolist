@@ -69,6 +69,12 @@ def del_fsm_state(chat_id: int) -> bool:
     return cache.delete(chat_id)
 
 
+OWNER_WRITER = (
+        Q(participants__role=BoardParticipant.Role.owner)
+        | Q(participants__role=BoardParticipant.Role.writer)
+)
+
+
 class Command(BaseCommand):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -99,10 +105,10 @@ class Command(BaseCommand):
         return (
             Q(participants__user_id=tg_user.user_id)
             & Q(is_deleted=False)
-            & (
-                Q(participants__role=BoardParticipant.Role.owner)
-                | Q(participants__role=BoardParticipant.Role.writer)
-            )
+            # & (
+            #     Q(participants__role=BoardParticipant.Role.owner)
+            #     | Q(participants__role=BoardParticipant.Role.writer)
+            # )
             & and_
         )
 
@@ -180,15 +186,19 @@ class Command(BaseCommand):
         )
 
     def handle_board_list(self, msg: Message, tg_user: TgUser):
-        resp_boards: list[str] = [
-            f'#{board.id} {board.title}'
-            for board in Board.objects.filter(self._get_board_query(tg_user))
-        ]
-
+        extra_condition = Q()
         text = ''
         fsm_state = get_fsm_state(tg_user.chat_id)
         if fsm_state and fsm_state.state == StateEnum.CHOOSE_BOARD:
             text = 'Select board:\n'
+            extra_condition = OWNER_WRITER
+
+        resp_boards: list[str] = [
+            f'#{board.id} {board.title}'
+            for board in Board.objects.filter(
+                self._get_board_query(tg_user, and_=extra_condition)
+            )
+        ]
 
         if resp_boards:
             text += '\n'.join(resp_boards)

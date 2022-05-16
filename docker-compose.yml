@@ -8,6 +8,7 @@ x-common-variables: &common-variables
   SECRET_KEY: ${SECRET_KEY}
   DEBUG: ${DEBUG}
   BOT_TOKEN: ${BOT_TOKEN}
+  REDIS_HOST: redis
 
 services:
 
@@ -48,6 +49,8 @@ services:
 #      DB_HOST: postgres
     restart: always
     depends_on:
+      redis:
+        condition: service_started
       postgres:
         condition: service_healthy
       migrations:
@@ -71,6 +74,8 @@ services:
     environment: *common-variables
     restart: always
     depends_on:
+      redis:
+        condition: service_started
       postgres:
         condition: service_healthy
       migrations:
@@ -89,6 +94,17 @@ services:
         condition: service_healthy
     command: >
       sh -c "python manage.py migrate"
+
+  redis:
+    image: redis:latest
+#    volumes:
+#      - .:/code
+#    environment: *common-variables
+##      <<: *common-variables
+##      DB_HOST: postgres
+    restart: always
+#    command: >
+#      sh -c "python3 manage.py runserver 0.0.0.0:8000"
 
   postgres:
     image: postgres:alpine

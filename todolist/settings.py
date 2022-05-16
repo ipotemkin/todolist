@@ -18,6 +18,7 @@ env = environ.Env(
     SOCIAL_AUTH_VK_OAUTH2_KEY=(str, 'example'),
     SOCIAL_AUTH_VK_OAUTH2_SECRET=(str, 'example'),
     NO_FRONT=(bool, False),
+    REDIS_HOST=(str, 'localhost')
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -208,10 +209,12 @@ SWAGGER_SETTINGS = {
 
 BOT_TOKEN = env.str('BOT_TOKEN')
 
+REDIS_HOST = env.str('REDIS_HOST')
+
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': 'localhost:6379',
+        'LOCATION': f'{REDIS_HOST}:6379',
     },
 }
 
