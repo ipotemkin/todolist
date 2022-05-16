@@ -9,6 +9,7 @@ x-common-variables: &common-variables
   DEBUG: ${DEBUG}
   NO_FRONT: 'TRUE'
   BOT_TOKEN: ${BOT_TOKEN}
+  REDIS_HOST: redis
 
 services:
 
@@ -20,13 +21,21 @@ services:
     environment: *common-variables
     ports:
       - '8000:8000'
+    restart: always
     depends_on:
+      redis:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
     command: >
       sh -c "python3 manage.py runserver 0.0.0.0:8000"
+    healthcheck:
+      test: curl -sS http://127.0.0.1:8000/health/ || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   bot:
     build:
@@ -34,7 +43,10 @@ services:
     volumes:
       - .:/code
     environment: *common-variables
+    restart: always
     depends_on:
+      redis:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       migrations:
@@ -53,6 +65,15 @@ services:
         condition: service_healthy
     command: >
       sh -c "python manage.py migrate"
+
+  redis:
+    image: redis:latest
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   postgres:
     image: postgres:alpine

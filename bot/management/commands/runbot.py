@@ -105,10 +105,6 @@ class Command(BaseCommand):
         return (
             Q(participants__user_id=tg_user.user_id)
             & Q(is_deleted=False)
-            # & (
-            #     Q(participants__role=BoardParticipant.Role.owner)
-            #     | Q(participants__role=BoardParticipant.Role.writer)
-            # )
             & and_
         )
 

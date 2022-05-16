@@ -10,6 +10,7 @@ x-common-variables: &common-variables
   SOCIAL_AUTH_VK_OAUTH2_KEY: 'testing-key'
   SOCIAL_AUTH_VK_OAUTH2_SECRET: 'testing-secret'
   BOT_TOKEN: ${BOT_TOKEN}
+  REDIS_HOST: redis
 
 services:
 
@@ -17,6 +18,7 @@ services:
     image: sermalenk/skypro-front:lesson_38
     ports:
       - '8080:80'
+    restart: always
     depends_on:
       api:
         condition: service_healthy
@@ -29,6 +31,8 @@ services:
     environment: *common-variables
     restart: always
     depends_on:
+      redis:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       migrations:
@@ -47,6 +51,8 @@ services:
     environment: *common-variables
     restart: always
     depends_on:
+      redis:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       migrations:
@@ -63,6 +69,15 @@ services:
         condition: service_healthy
     command: >
       sh -c "python3 manage.py migrate"
+
+  redis:
+    image: redis:latest
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   postgres:
     image: postgres:12.4-alpine

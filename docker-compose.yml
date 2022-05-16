@@ -12,17 +12,6 @@ x-common-variables: &common-variables
 
 services:
 
-#  fixtures:
-#    build:
-#      context: .
-#    environment:
-#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-#      POSTGRES_HOST: postgres
-#    depends_on:
-#      migrations:
-#        condition: service_completed_successfully
-#    command: bash load_fixtures.sh
-
   front:
 #    image: sermalenk/skypro-front:version_1
 #    image: sermalenk/skypro-front:base
@@ -45,12 +34,10 @@ services:
     volumes:
       - .:/code
     environment: *common-variables
-#      <<: *common-variables
-#      DB_HOST: postgres
     restart: always
     depends_on:
       redis:
-        condition: service_started
+        condition: service_healthy
       postgres:
         condition: service_healthy
       migrations:
@@ -75,7 +62,7 @@ services:
     restart: always
     depends_on:
       redis:
-        condition: service_started
+        condition: service_healthy
       postgres:
         condition: service_healthy
       migrations:
@@ -97,14 +84,12 @@ services:
 
   redis:
     image: redis:latest
-#    volumes:
-#      - .:/code
-#    environment: *common-variables
-##      <<: *common-variables
-##      DB_HOST: postgres
     restart: always
-#    command: >
-#      sh -c "python3 manage.py runserver 0.0.0.0:8000"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
 
   postgres:
     image: postgres:alpine
