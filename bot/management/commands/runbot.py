@@ -1,3 +1,5 @@
+from django.core.cache import cache
+
 import os
 from enum import Enum, unique, auto
 from typing import Optional
@@ -42,7 +44,32 @@ class FSMData(BaseModel):
     board_id: Optional[int] = None
 
 
-FSM_STATES: dict[int, FSMData] = dict()
+# FSM_STATES: dict[int, FSMData] = dict()
+
+
+def set_fsm_state(chat_id: int, fsm: FSMData, timeout=None):
+    cache.set(chat_id, fsm.json(), timeout=timeout)
+
+
+def get_fsm_state(chat_id: int) -> Optional[FSMData]:
+    resp = cache.get(chat_id)
+    if resp:
+        return FSMData.parse_raw(resp)
+    return None
+
+
+def update_tsm_state(chat_id: int, fsm: FSMData) -> bool:
+    if cache.get(chat_id):
+        del_fsm_state(chat_id)
+
+    if not set_fsm_state(chat_id, fsm):
+        return False
+
+    return True
+
+
+def del_fsm_state(chat_id: int) -> bool:
+    return cache.delete(chat_id)
 
 
 class Command(BaseCommand):
@@ -54,10 +81,10 @@ class Command(BaseCommand):
     def _gen_verification_code() -> str:
         return os.urandom(12).hex()
 
-    @staticmethod
-    def _clean_fsm_states(chat_id: int) -> None:
-        if chat_id in FSM_STATES:
-            FSM_STATES.pop(chat_id)
+    # @staticmethod
+    # def _clean_fsm_states(chat_id: int) -> None:
+    #     if chat_id in FSM_STATES:
+    #         FSM_STATES.pop(chat_id)
 
     @staticmethod
     def _get_goal_query(tg_user: TgUser, and_: Q = Q()) -> Q:
@@ -116,9 +143,12 @@ class Command(BaseCommand):
         ]
 
         text = ''
+        fsm_state = get_fsm_state(tg_user.chat_id)
         if (
-            tg_user.chat_id in FSM_STATES
-            and FSM_STATES[tg_user.chat_id].state == StateEnum.CHOOSE_GOAL
+            # tg_user.chat_id in FSM_STATES
+            # and FSM_STATES[tg_user.chat_id].state == StateEnum.CHOOSE_GOAL
+            #
+            fsm_state and fsm_state.state == StateEnum.CHOOSE_GOAL
         ):
             text = 'Select goal:\n'
 
@@ -126,7 +156,8 @@ class Command(BaseCommand):
             text += '\n'.join(resp_goals)
         else:
             text = '[no goals found]'
-            self._clean_fsm_states(tg_user.chat_id)
+            # self._clean_fsm_states(tg_user.chat_id)
+            del_fsm_state(tg_user.chat_id)
 
         self.tg_client.send_message(
             chat_id=msg.chat.id,
@@ -134,7 +165,12 @@ class Command(BaseCommand):
         )
 
     def handle_create_goal(self, msg: Message, tg_user: TgUser):
-        FSM_STATES[tg_user.chat_id] = FSMData(state=StateEnum.CHOOSE_CATEGORY, goal=NewGoal())
+        set_fsm_state(tg_user.chat_id, FSMData(state=StateEnum.CHOOSE_CATEGORY, goal=NewGoal()))
+        # FSM_STATES[tg_user.chat_id] = FSMData(state=StateEnum.CHOOSE_CATEGORY, goal=NewGoal())
+
+        # fsm = FSMData(state=StateEnum.CHOOSE_CATEGORY, goal=NewGoal()).json()
+        # cache.set(tg_user.chat_id, fsm, timeout=60*5)
+
         self.handle_category_list(msg=msg, tg_user=tg_user)
 
     def handle_category_list(self, msg: Message, tg_user: TgUser):
@@ -144,9 +180,14 @@ class Command(BaseCommand):
         ]
 
         text = ''
+        fsm_state = get_fsm_state(tg_user.chat_id)
+
         if (
-            tg_user.chat_id in FSM_STATES
-            and FSM_STATES[tg_user.chat_id].state == StateEnum.CHOOSE_CATEGORY
+            # tg_user.chat_id in FSM_STATES
+            # and FSM_STATES[tg_user.chat_id].state == StateEnum.CHOOSE_CATEGORY
+
+            fsm_state and fsm_state.state == StateEnum.CHOOSE_CATEGORY
+
         ):
             text = 'Select category:\n'
 
@@ -154,7 +195,17 @@ class Command(BaseCommand):
             text += '\n'.join(resp_categories)
         else:
             text = '[no categories found]'
-            self._clean_fsm_states(tg_user.chat_id)
+            # self._clean_fsm_states(tg_user.chat_id)
+            del_fsm_state(tg_user.chat_id)
+
+        # print('testing redis.cache')
+        # print(cache.get(tg_user.chat_id))
+
+        # fsm_json = cache.get(tg_user.chat_id)
+        # if fsm_json:
+        #     test_redis = FSMData.parse_raw(cache.get(tg_user.chat_id))
+        #     print('deserialized')
+        #     print(test_redis)
 
         self.tg_client.send_message(
             chat_id=msg.chat.id,
@@ -168,9 +219,13 @@ class Command(BaseCommand):
         ]
 
         text = ''
+        fsm_state = get_fsm_state(tg_user.chat_id)
+
         if (
-            tg_user.chat_id in FSM_STATES
-            and FSM_STATES[tg_user.chat_id].state == StateEnum.CHOOSE_BOARD
+            # tg_user.chat_id in FSM_STATES
+            # and FSM_STATES[tg_user.chat_id].state == StateEnum.CHOOSE_BOARD
+
+            fsm_state and fsm_state.state == StateEnum.CHOOSE_BOARD
         ):
             text = 'Select board:\n'
 
@@ -178,7 +233,8 @@ class Command(BaseCommand):
             text += '\n'.join(resp_boards)
         else:
             text = '[no boards found]'
-            self._clean_fsm_states(tg_user.chat_id)
+            # self._clean_fsm_states(tg_user.chat_id)
+            del_fsm_state(tg_user.chat_id)
 
         self.tg_client.send_message(
             chat_id=msg.chat.id,
@@ -186,7 +242,8 @@ class Command(BaseCommand):
         )
 
     def handle_create_category(self, msg: Message, tg_user: TgUser):
-        FSM_STATES[tg_user.chat_id] = FSMData(state=StateEnum.CHOOSE_BOARD, goal=NewGoal())
+        # FSM_STATES[tg_user.chat_id] = FSMData(state=StateEnum.CHOOSE_BOARD, goal=NewGoal())
+        set_fsm_state(tg_user.chat_id, FSMData(state=StateEnum.CHOOSE_BOARD, goal=NewGoal()))
         self.handle_board_list(msg=msg, tg_user=tg_user)
 
     def handle_save_selected_category(self, msg: Message, tg_user: TgUser):
@@ -195,9 +252,19 @@ class Command(BaseCommand):
             if GoalCategory.objects.filter(
                 self._get_category_query(tg_user, and_=Q(id=cat_id))
             ).count():
-                FSM_STATES[tg_user.chat_id].goal.cat_id = cat_id
-                self.tg_client.send_message(chat_id=msg.chat.id, text='[set title]')
-                FSM_STATES[tg_user.chat_id].state = StateEnum.CHOSEN_CATEGORY
+                # FSM_STATES[tg_user.chat_id].goal.cat_id = cat_id
+                # self.tg_client.send_message(chat_id=msg.chat.id, text='[set title]')
+                # FSM_STATES[tg_user.chat_id].state = StateEnum.CHOSEN_CATEGORY
+                # return
+
+                fsm_state = get_fsm_state(tg_user.chat_id)
+                if fsm_state:
+                    fsm_state.goal.cat_id = cat_id
+                    fsm_state.state = StateEnum.CHOSEN_CATEGORY
+                    update_tsm_state(tg_user.chat_id, fsm_state)
+                    self.tg_client.send_message(chat_id=msg.chat.id, text='[set title]')
+                    return
+                self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
                 return
 
         self.tg_client.send_message(chat_id=msg.chat.id, text='[invalid category id]')
@@ -206,20 +273,40 @@ class Command(BaseCommand):
         if msg.text.isdigit():
             board_id = int(msg.text)
             if Board.objects.filter(self._get_board_query(tg_user, and_=Q(id=board_id))).count():
-                FSM_STATES[tg_user.chat_id].board_id = board_id
-                self.tg_client.send_message(chat_id=msg.chat.id, text='[set title for a category]')
-                FSM_STATES[tg_user.chat_id].state = StateEnum.CHOSEN_BOARD
+                # FSM_STATES[tg_user.chat_id].board_id = board_id
+                # self.tg_client.send_message(chat_id=msg.chat.id, text='[set title for a category]')
+                # FSM_STATES[tg_user.chat_id].state = StateEnum.CHOSEN_BOARD
+                # return
+
+                fsm_state = get_fsm_state(tg_user.chat_id)
+                if fsm_state:
+                    fsm_state.board_id = board_id
+                    fsm_state.state = StateEnum.CHOSEN_BOARD
+                    update_tsm_state(tg_user.chat_id, fsm_state)
+                    self.tg_client.send_message(chat_id=msg.chat.id, text='[set title for a category]')
+                    return
+                self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
                 return
 
         self.tg_client.send_message(chat_id=msg.chat.id, text='[invalid board id]')
 
     def handle_set_goal_title(self, msg: Message, tg_user: TgUser):
-        FSM_STATES[tg_user.chat_id].goal.goal_title = msg.text
+        fsm_state = get_fsm_state(tg_user.chat_id)
+        if not fsm_state:
+            self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
+            return
+        fsm_state.goal.goal_title = msg.text
+        fsm_state.state = StateEnum.SET_GOAL_TITLE
+        update_tsm_state(tg_user.chat_id, fsm_state)
         self.tg_client.send_message(chat_id=msg.chat.id, text='[set due_date]')
-        FSM_STATES[tg_user.chat_id].state = StateEnum.SET_GOAL_TITLE
 
     def handle_save_new_goal(self, msg: Message, tg_user: TgUser):
-        goal: NewGoal = FSM_STATES[tg_user.chat_id].goal
+        fsm_state = get_fsm_state(tg_user.chat_id)
+        if not fsm_state:
+            self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
+            return
+
+        goal: NewGoal = fsm_state.goal
         goal.due_date = msg.text
         if goal.complete():
             Goal.objects.create(
@@ -231,20 +318,29 @@ class Command(BaseCommand):
         else:
             self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
 
-        self._clean_fsm_states(tg_user.chat_id)
+        # self._clean_fsm_states(tg_user.chat_id)
+        del_fsm_state(tg_user.chat_id)
 
     def handle_save_new_category(self, msg: Message, tg_user: TgUser):
+        fsm_states = get_fsm_state(tg_user.chat_id)
+        if not fsm_states:
+            self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
+            return
+
         category = msg.text
         GoalCategory.objects.create(
             title=category,
             user_id=tg_user.user_id,
-            board_id=FSM_STATES[tg_user.chat_id].board_id
+            # board_id=FSM_STATES[tg_user.chat_id].board_id
+            board_id=fsm_states.board_id
         )
         self.tg_client.send_message(chat_id=msg.chat.id, text='[new category created]')
-        self._clean_fsm_states(tg_user.chat_id)
+        # self._clean_fsm_states(tg_user.chat_id)
+        del_fsm_state(tg_user.chat_id)
 
     def handle_delete_goal(self, msg: Message, tg_user: TgUser):
-        FSM_STATES[tg_user.chat_id] = FSMData(state=StateEnum.CHOOSE_GOAL, goal=NewGoal())
+        set_fsm_state(tg_user.chat_id, FSMData(state=StateEnum.CHOOSE_GOAL, goal=NewGoal()))
+        # FSM_STATES[tg_user.chat_id] = FSMData(state=StateEnum.CHOOSE_GOAL, goal=NewGoal())
         self.handle_goal_list(msg=msg, tg_user=tg_user)
 
     def handle_delete_selected_goal(self, msg: Message, tg_user: TgUser):
@@ -255,7 +351,8 @@ class Command(BaseCommand):
                 goal.is_deleted = True
                 goal.save(update_fields=['is_deleted'])
                 self.tg_client.send_message(chat_id=msg.chat.id, text='[goal has been deleted]')
-                self._clean_fsm_states(tg_user.chat_id)
+                # self._clean_fsm_states(tg_user.chat_id)
+                del_fsm_state(tg_user.chat_id)
                 return
 
         self.tg_client.send_message(chat_id=msg.chat.id, text='[invalid goal id]')
@@ -280,10 +377,12 @@ class Command(BaseCommand):
             self.handle_delete_goal(msg=msg, tg_user=tg_user)
 
         elif msg.text == '/cancel':
-            self._clean_fsm_states(tg_user.chat_id)
+            # self._clean_fsm_states(tg_user.chat_id)
+            del_fsm_state(tg_user.chat_id)
 
-        elif tg_user.chat_id in FSM_STATES:
-            state: StateEnum = FSM_STATES[tg_user.chat_id].state
+        elif fsm_state := get_fsm_state(tg_user.chat_id):
+            state: StateEnum = fsm_state.state
+            # state: StateEnum = FSM_STATES[tg_user.chat_id].state
 
             if state == StateEnum.CHOOSE_CATEGORY:
                 self.handle_save_selected_category(msg=msg, tg_user=tg_user)
@@ -307,7 +406,7 @@ class Command(BaseCommand):
             self.tg_client.send_message(chat_id=msg.chat.id, text='[unknown command]')
 
         # TODO remove after debugging
-        print(FSM_STATES)
+        # print(FSM_STATES)
 
     def handle_message(self, msg: Message):
         tg_user, created = TgUser.objects.get_or_create(
