@@ -84,7 +84,7 @@ class Command(BaseCommand):
                 Q(participants__role=BoardParticipant.Role.owner)
                 | Q(participants__role=BoardParticipant.Role.writer)
             )
-           & and_
+            & and_
         )
 
     def handle(self, *args, **options):

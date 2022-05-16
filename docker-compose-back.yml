@@ -7,6 +7,8 @@ x-common-variables: &common-variables
   DB_HOST: postgres
   SECRET_KEY: ${SECRET_KEY}
   DEBUG: ${DEBUG}
+  NO_FRONT: 'TRUE'
+  BOT_TOKEN: ${BOT_TOKEN}
 
 services:
 
@@ -16,20 +18,41 @@ services:
     volumes:
       - .:/code
     environment: *common-variables
-#      <<: *common-variables
-#      DB_HOST: postgres
-
     ports:
       - '8000:8000'
     depends_on:
       postgres:
         condition: service_healthy
-
+      migrations:
+        condition: service_completed_successfully
     command: >
-      sh -c "python manage.py migrate
-            python3 manage.py runserver 0.0.0.0:8000"
-#    volumes:
-#      - api_media:/opt/app/media
+      sh -c "python3 manage.py runserver 0.0.0.0:8000"
+
+  bot:
+    build:
+      context: .
+    volumes:
+      - .:/code
+    environment: *common-variables
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    command: >
+      sh -c "python manage.py runbot"
+
+  migrations:
+    build:
+      context: .
+    volumes:
+      - .:/code
+    environment: *common-variables
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate"
 
   postgres:
     image: postgres:alpine
@@ -43,6 +66,3 @@ services:
       retries: 5
     volumes:
       - ./postgres-data/db/:/var/lib/postgresql/data
-
-#volumes:
-#  api_media:

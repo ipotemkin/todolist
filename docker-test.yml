@@ -9,15 +9,17 @@ x-common-variables: &common-variables
   DEBUG: 'TRUE'
   SOCIAL_AUTH_VK_OAUTH2_KEY: 'testing-key'
   SOCIAL_AUTH_VK_OAUTH2_SECRET: 'testing-secret'
+  BOT_TOKEN: ${BOT_TOKEN}
 
 services:
 
   front:
-    image: sermalenk/skypro-front:lesson_37
+    image: sermalenk/skypro-front:lesson_38
     ports:
       - '8080:80'
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
 
@@ -25,14 +27,42 @@ services:
     build:
       context: .
     environment: *common-variables
-
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy
-
+      migrations:
+        condition: service_completed_successfully
     command: >
-      sh -c "python manage.py migrate
-            python3 manage.py runserver 0.0.0.0:8000"
+      sh -c "python3 manage.py runserver 0.0.0.0:8000"
+    healthcheck:
+      test: curl -sS http://127.0.0.1:8000/health/ || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    build:
+      context: .
+    environment: *common-variables
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    command: >
+      sh -c "python3 manage.py runbot"
+
+  migrations:
+    build:
+      context: .
+    environment: *common-variables
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "python3 manage.py migrate"
 
   postgres:
     image: postgres:12.4-alpine
