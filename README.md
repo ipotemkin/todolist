@@ -37,6 +37,17 @@
 
 После запуска приложение доступно по адресу: ```localhost:8000/``` или ```localhost:8000/swagger/```
 
+## Зависимости
+
+- Django
+- Django-DRF
+- social-django
+- Redis
+- Postgres
+- PyDantic
+
+Полный список зависимостей в requirements.txt
+
 ## История разработки по домашкам
 ### Шаг первый (ДЗ 33):
 
