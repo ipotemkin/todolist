@@ -219,7 +219,6 @@ class Command(BaseCommand):
                     self.tg_client.send_message(chat_id=msg.chat.id, text='[set title]')
                     return
                 self._smth_wrong(msg.chat.id)
-                # self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
                 return
 
         self.tg_client.send_message(chat_id=msg.chat.id, text='[invalid category id]')
@@ -236,7 +235,6 @@ class Command(BaseCommand):
                     self.tg_client.send_message(chat_id=msg.chat.id, text='[set title for a category]')
                     return
                 self._smth_wrong(msg.chat.id)
-                # self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
                 return
 
         self.tg_client.send_message(chat_id=msg.chat.id, text='[invalid board id]')
@@ -245,7 +243,6 @@ class Command(BaseCommand):
         fsm_state = get_fsm_state(tg_user.chat_id)
         if not fsm_state:
             self._smth_wrong(msg.chat.id)
-            # self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
             return
         fsm_state.goal.goal_title = msg.text
         fsm_state.state = StateEnum.SET_GOAL_TITLE
@@ -256,7 +253,6 @@ class Command(BaseCommand):
         fsm_state = get_fsm_state(tg_user.chat_id)
         if not fsm_state:
             self._smth_wrong(msg.chat.id)
-            # self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
             return
 
         goal: NewGoal = fsm_state.goal
@@ -270,16 +266,13 @@ class Command(BaseCommand):
             self.tg_client.send_message(chat_id=msg.chat.id, text='[new goal created]')
         else:
             self._smth_wrong(msg.chat.id)
-            # self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
 
-        # self._clean_fsm_states(tg_user.chat_id)
         del_fsm_state(tg_user.chat_id)
 
     def handle_save_new_category(self, msg: Message, tg_user: TgUser):
         fsm_states = get_fsm_state(tg_user.chat_id)
         if not fsm_states:
             self._smth_wrong(msg.chat.id)
-            # self.tg_client.send_message(chat_id=msg.chat.id, text='[something went wrong]')
             return
 
         category = msg.text
