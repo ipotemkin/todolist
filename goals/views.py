@@ -87,7 +87,6 @@ class GoalCategoryListView(ListAPIView, GoalCategoryMixin):
 
 
 class GoalCategoryView(RetrieveUpdateDestroyAPIView, GoalCategoryMixin):
-    # pass
     def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.save()
@@ -132,7 +131,6 @@ class GoalListView(ListAPIView, GoalMixin):
 
 
 class GoalView(RetrieveUpdateDestroyAPIView, GoalMixin):
-    # pass
     def perform_destroy(self, instance):
         instance.is_deleted = True
         instance.save()
