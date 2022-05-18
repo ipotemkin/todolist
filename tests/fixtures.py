@@ -1,220 +1,138 @@
 import pytest
 
-# from ads import models
-from core.models import User
 from goals.models import Board, BoardParticipant, GoalCategory
 
 TEST_USERNAME = "james"
 TEST_USERNAME_2 = "user2"
+USER_PASSWORD = "qwerty123"
+CATEGORY_NAME = "Testing category name"
+CATEGORY_NAME_2 = "Testing category name 2"
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def logged_in_user(client, django_user_model):
-    username = TEST_USERNAME
-    password = "qwerty123"
-
-    django_user_model.objects.create_user(
-        username=username,
-        password=password
+def user1(client, django_user_model):
+    return django_user_model.objects.create_user(
+        username=TEST_USERNAME,
+        password=USER_PASSWORD
     )
-    client.login(username=username, password=password)
-
-    return User.objects.get(username=username)
-
-
-@pytest.fixture()
-@pytest.mark.django_db
-def logged_in_user2(client, django_user_model):
-    username = TEST_USERNAME_2
-    password = "qwerty123"
-
-    django_user_model.objects.create_user(
-        username=username,
-        password=password
-    )
-    client.login(username=username, password=password)
-    return User.objects.get(username=username)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
 def user2(client, django_user_model):
-    username = TEST_USERNAME_2
-    password = "qwerty123"
-
-    user2 = django_user_model.objects.create_user(
-        username=username,
-        password=password
+    return django_user_model.objects.create_user(
+        username=TEST_USERNAME_2,
+        password=USER_PASSWORD
     )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def logged_in_user(client, user1):
+    client.login(username=user1.username, password=USER_PASSWORD)
+    return user1
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def logged_in_user2(client, user2):
+    client.login(username=TEST_USERNAME_2, password=USER_PASSWORD)
     return user2
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def category_and_board(client):
-    category_name = "Testing category name"
+def board(client):
     board_name = "Testing board name"
-    board = Board.objects.create(title=board_name)
-    user = User.objects.get(username=TEST_USERNAME)
-    BoardParticipant.objects.create(board=board, user=user)
-    category = GoalCategory.objects.create(title=category_name, user=user, board=board)
-
-    return category, board
+    return Board.objects.create(title=board_name)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def categories_and_board(client):
-    category_name = "Testing category"
-    category_2_name = "Testing category 2"
-    board_name = "Testing board"
-    board = Board.objects.create(title=board_name)
-    user = User.objects.get(username=TEST_USERNAME)
-    BoardParticipant.objects.create(board=board, user=user)
-    category = GoalCategory.objects.create(title=category_name, user=user, board=board)
-    category_2 = GoalCategory.objects.create(title=category_2_name, user=user, board=board)
+def category_for_user1(client, user1, board, boardparticipant_user1_owner):
+    return GoalCategory.objects.create(title=CATEGORY_NAME, user=user1, board=board)
 
-    return category, category_2, board
+
+def make_categories(user, board):
+    category = GoalCategory.objects.create(title=CATEGORY_NAME, user=user, board=board)
+    category_2 = GoalCategory.objects.create(title=CATEGORY_NAME_2, user=user, board=board)
+    return category, category_2
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def categories_and_board_user2(client):
-    category_name = "Testing category"
-    category_2_name = "Testing category 2"
-    board_name = "Testing board"
-    board = Board.objects.create(title=board_name)
-    user = User.objects.get(username=TEST_USERNAME_2)
-    BoardParticipant.objects.create(board=board, user=user)
-    category = GoalCategory.objects.create(title=category_name, user=user, board=board)
-    category_2 = GoalCategory.objects.create(title=category_2_name, user=user, board=board)
-
-    return category, category_2, board
+def categories_for_user1(client, user1, board, boardparticipant_user1_owner):
+    return make_categories(user1, board)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def categories_and_board_user2_user1_reader(client):
-    category_name = "Testing category"
-    category_2_name = "Testing category 2"
-    board_name = "Testing board"
-    board = Board.objects.create(title=board_name)
-
-    user2 = User.objects.get(username=TEST_USERNAME_2)
-    BoardParticipant.objects.create(board=board, user=user2, role=BoardParticipant.Role.reader)
-
-    user1 = User.objects.get(username=TEST_USERNAME)
-    BoardParticipant.objects.create(board=board, user=user1)
-
-    category = GoalCategory.objects.create(title=category_name, user=user1, board=board)
-    category_2 = GoalCategory.objects.create(title=category_2_name, user=user1, board=board)
-
-    return category, category_2, board
+def categories_for_user2(client, user2, board, boardparticipant_user2_owner):
+    return make_categories(user2, board)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def categories_and_board_user2_user1_writer(client):
-    category_name = "Testing category"
-    category_2_name = "Testing category 2"
-    board_name = "Testing board"
-    board = Board.objects.create(title=board_name)
-
-    user2 = User.objects.get(username=TEST_USERNAME_2)
-    BoardParticipant.objects.create(board=board, user=user2, role=BoardParticipant.Role.writer)
-
-    user1 = User.objects.get(username=TEST_USERNAME)
-    BoardParticipant.objects.create(board=board, user=user1)
-
-    category = GoalCategory.objects.create(title=category_name, user=user1, board=board)
-    category_2 = GoalCategory.objects.create(title=category_2_name, user=user1, board=board)
-
-    return category, category_2, board
+def categories_for_user2_user1_reader(
+        client, user1, board, boardparticipant_user2_owner, boardparticipant_user1_reader
+):
+    return make_categories(user1, board)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def category_and_board_user2(client):
-    category_name = "Testing category name"
-    board_name = "Testing board name"
-    board = Board.objects.create(title=board_name)
-    user = User.objects.get(username=TEST_USERNAME_2)
-    BoardParticipant.objects.create(board=board, user=user)
-    category = GoalCategory.objects.create(title=category_name, user=user, board=board)
-
-    return category, board
+def categories_for_user2_user1_writer(
+        client, user1, board, boardparticipant_user1_writer, boardparticipant_user2_owner
+):
+    return make_categories(user1, board)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def category_and_board_user2_user1_reader(client):
-    category_name = "Testing category name"
-    board_name = "Testing board name"
-    board = Board.objects.create(title=board_name)
-    user2 = User.objects.get(username=TEST_USERNAME_2)
-    user = User.objects.get(username=TEST_USERNAME)
-
-    BoardParticipant.objects.create(board=board, user=user2)
-    BoardParticipant.objects.create(board=board, user=user, role=BoardParticipant.Role.reader)
-    category = GoalCategory.objects.create(title=category_name, user=user, board=board)
-
-    return category, board
+def boardparticipant_user1_owner(client, board, user1):
+    return BoardParticipant.objects.create(board=board, user=user1)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
-def category_and_board_user2_user1_writer(client):
-    category_name = "Testing category name"
-    board_name = "Testing board name"
-    board = Board.objects.create(title=board_name)
-    user2 = User.objects.get(username=TEST_USERNAME_2)
-    user = User.objects.get(username=TEST_USERNAME)
-
-    BoardParticipant.objects.create(board=board, user=user2)
-    BoardParticipant.objects.create(board=board, user=user, role=BoardParticipant.Role.writer)
-    category = GoalCategory.objects.create(title=category_name, user=user, board=board)
-
-    return category, board
+def boardparticipant_user2_owner(client, board, user2):
+    return BoardParticipant.objects.create(board=board, user=user2)
 
 
-# @pytest.fixture()
-# @pytest.mark.django_db
-# def category_and_board_user2(client):
-#     category_name = "Testing category name user 2"
-#     board_name = "Testing board name 2"
-#     board = Board.objects.create(title=board_name)
-#     user = User.objects.get(username=TEST_USERNAME)
-#     BoardParticipant.objects.create(board=board, user=user)
-#     category = GoalCategory.objects.create(title=category_name, user=user, board=board)
-#
-#     return category, board
-
-    # response = client.post(
-    #     "/users/token/",
-    #     {"username": username, "password": password},
-    #     format="json"
-    # )
-    #
-    # return response.data["access"], user.id
+@pytest.fixture()
+@pytest.mark.django_db
+def boardparticipant_user1_reader(client, board, user1):
+    return BoardParticipant.objects.create(
+        board=board, user=user1, role=BoardParticipant.Role.reader
+    )
 
 
-# @pytest.fixture()
-# @pytest.mark.django_db
-# def admin_user_token(client, django_user_model):
-#     username = "james"
-#     password = "james"
-#
-#     user = django_user_model.objects.create_user(
-#         username=username,
-#         password=password,
-#         role=models.User.ADMIN,
-#     )
-#
-#     response = client.post(
-#         "/users/token/",
-#         {"username": username, "password": password},
-#         format="json"
-#     )
-#
-#     return response.data["access"], user.id
+@pytest.fixture()
+@pytest.mark.django_db
+def boardparticipant_user1_writer(client, board, user1):
+    return BoardParticipant.objects.create(
+        board=board, user=user1, role=BoardParticipant.Role.writer
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def category_for_user2(client, board, user2, boardparticipant_user2_owner):
+    return GoalCategory.objects.create(title=CATEGORY_NAME, user=user2, board=board)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def category_for_board_user2_user1_reader(
+        client, board, user1, user2, boardparticipant_user1_reader
+):
+    return GoalCategory.objects.create(title=CATEGORY_NAME, user=user1, board=board)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def category_for_board_user2_user1_writer(
+        client, board, user1, user2, boardparticipant_user1_writer
+):
+    return GoalCategory.objects.create(title=CATEGORY_NAME, user=user1, board=board)

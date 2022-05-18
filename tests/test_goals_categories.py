@@ -7,13 +7,16 @@ from goals.models import GoalCategory, Board, BoardParticipant
 from goals.serializers import GoalCategorySerializer
 
 
+NEW_CATEGORY_NAME = "New category name"
+
+
 @pytest.mark.django_db
 def test_goal_category_get_all_by_owner(
-            client,
-            logged_in_user,
-            categories_and_board
-    ):
-    category_1, category_2, _ = categories_and_board
+        client,
+        logged_in_user,
+        categories_for_user1
+):
+    category_1, category_2 = categories_for_user1
 
     expected_response = [
         GoalCategorySerializer(category_1).data,
@@ -30,7 +33,7 @@ def test_goal_category_get_all_forbidden_to_user_wo_rights(
         client,
         logged_in_user,
         user2,
-        categories_and_board_user2
+        categories_for_user2
 ):
     response = client.get("/goals/goal_category/list")
 
@@ -42,7 +45,7 @@ def test_goal_category_get_all_forbidden_to_user_wo_rights(
 def test_goal_category_get_all_forbidden_to_unauthorized_user(
         client,
         user2,
-        categories_and_board_user2
+        categories_for_user2
 ):
     response = client.get("/goals/goal_category/list")
 
@@ -54,9 +57,9 @@ def test_goal_category_get_all_allowed_to_reader(
         client,
         logged_in_user,
         user2,
-        categories_and_board_user2_user1_reader
+        categories_for_user2_user1_reader
 ):
-    category_1, category_2, _ = categories_and_board_user2_user1_reader
+    category_1, category_2 = categories_for_user2_user1_reader
 
     expected_response = [
         GoalCategorySerializer(category_1).data,
@@ -73,9 +76,9 @@ def test_goal_category_get_all_allowed_to_writer(
         client,
         logged_in_user,
         user2,
-        categories_and_board_user2_user1_writer
+        categories_for_user2_user1_writer
 ):
-    category_1, category_2, _ = categories_and_board_user2_user1_writer
+    category_1, category_2 = categories_for_user2_user1_writer
 
     expected_response = [
         GoalCategorySerializer(category_1).data,
@@ -91,9 +94,9 @@ def test_goal_category_get_all_allowed_to_writer(
 def test_goal_category_get_one_by_owner(
         client,
         logged_in_user,
-        category_and_board
+        category_for_user1
 ):
-    category, board = category_and_board
+    category = category_for_user1
     expected_response = GoalCategorySerializer(category).data
 
     response = client.get(f"/goals/goal_category/{category.id}")
@@ -106,10 +109,9 @@ def test_goal_category_get_one_by_owner(
 def test_goal_category_get_one_forbidden_to_user_wo_rights(
         client,
         logged_in_user,
-        user2,
-        category_and_board_user2
+        category_for_user2
 ):
-    category, _ = category_and_board_user2
+    category = category_for_user2
 
     response = client.get(f"/goals/goal_category/{category.id}")
 
@@ -119,10 +121,9 @@ def test_goal_category_get_one_forbidden_to_user_wo_rights(
 @pytest.mark.django_db
 def test_goal_category_get_one_forbidden_to_unauthorized_user(
         client,
-        user2,
-        category_and_board_user2
+        category_for_user2
 ):
-    category, _ = category_and_board_user2
+    category = category_for_user2
 
     response = client.get(f"/goals/goal_category/{category.id}")
 
@@ -133,10 +134,9 @@ def test_goal_category_get_one_forbidden_to_unauthorized_user(
 def test_goal_category_get_one_allowed_to_reader(
         client,
         logged_in_user,
-        user2,
-        category_and_board_user2_user1_reader
+        category_for_board_user2_user1_reader
 ):
-    category, board = category_and_board_user2_user1_reader
+    category = category_for_board_user2_user1_reader
     expected_response = GoalCategorySerializer(category).data
 
     response = client.get(f"/goals/goal_category/{category.id}")
@@ -149,10 +149,9 @@ def test_goal_category_get_one_allowed_to_reader(
 def test_goal_category_get_one_allowed_to_writer(
         client,
         logged_in_user,
-        user2,
-        category_and_board_user2_user1_writer
+        category_for_board_user2_user1_writer
 ):
-    category, board = category_and_board_user2_user1_writer
+    category = category_for_board_user2_user1_writer
     expected_response = GoalCategorySerializer(category).data
 
     response = client.get(f"/goals/goal_category/{category.id}")
@@ -173,9 +172,9 @@ def test_goal_category_not_found_for_user_wo_rights(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2
+        category_for_user2
 ):
-    category, board = category_and_board_user2
+    category = category_for_user2
     response = client.get(f"/goals/goal_category/{category.id}")
 
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -206,9 +205,8 @@ def test_goal_category_create_by_owner(client, logged_in_user):
 def test_goal_category_create_forbidden_to_unauthorized_user(
         client,
         user2,
-        category_and_board_user2
+        board,
 ):
-    _, board = category_and_board_user2
     category_name = "Testing category name"
 
     data = {
@@ -230,9 +228,8 @@ def test_goal_category_create_forbidden_to_user_wo_rights(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2
+        board,
 ):
-    _, board = category_and_board_user2
     category_name = "Testing category name"
 
     data = {
@@ -254,9 +251,9 @@ def test_goal_category_create_forbidden_to_reader(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2_user1_reader
+        board,
+        category_for_board_user2_user1_reader
 ):
-    _, board = category_and_board_user2_user1_reader
     category_name = "Testing category name"
 
     data = {
@@ -278,9 +275,9 @@ def test_goal_category_create_allowed_to_writer(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2_user1_writer
+        board,
+        category_for_board_user2_user1_writer
 ):
-    _, board = category_and_board_user2_user1_writer
     category_name = "Testing category name"
 
     data = {
@@ -297,19 +294,22 @@ def test_goal_category_create_allowed_to_writer(
     assert response.status_code == HTTPStatus.CREATED
 
 
-@pytest.mark.django_db
-def test_goal_category_partial_update_by_owner(client, logged_in_user, category_and_board):
-    category, board = category_and_board
-    new_category_title = "New testing category"
-    data = {"title": new_category_title}
-    expected_response = GoalCategorySerializer(category).data
-    expected_response["title"] = new_category_title
-
-    response = client.patch(
+def get_patch_response(client, category):
+    return client.patch(
         f"/goals/goal_category/{category.id}",
-        data,
+        {"title": NEW_CATEGORY_NAME},
         content_type="application/json"
     )
+
+
+@pytest.mark.django_db
+def test_goal_category_partial_update_by_owner(client, logged_in_user, category_for_user1):
+    category = category_for_user1
+
+    expected_response = GoalCategorySerializer(category).data
+    expected_response["title"] = NEW_CATEGORY_NAME
+
+    response = get_patch_response(client, category)
 
     assert response.status_code == HTTPStatus.OK
 
@@ -324,17 +324,14 @@ def test_goal_category_partial_update_by_owner(client, logged_in_user, category_
 def test_goal_category_partial_update_forbidden_to_unauthorized_user(
         client,
         user2,
-        category_and_board_user2
+        category_for_user2
 ):
-    category, board = category_and_board_user2
-    new_category_title = "New testing category"
-    data = {"title": new_category_title}
+    category = category_for_user2
 
-    response = client.patch(
-        f"/goals/goal_category/{category.id}",
-        data,
-        content_type="application/json"
-    )
+    expected_response = GoalCategorySerializer(category).data
+    expected_response["title"] = NEW_CATEGORY_NAME
+
+    response = get_patch_response(client, category)
 
     assert response.status_code == HTTPStatus.FORBIDDEN
 
@@ -344,17 +341,9 @@ def test_goal_category_partial_update_forbidden_to_user_wo_rights(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2
+        category_for_user2
 ):
-    category, board = category_and_board_user2
-    new_category_title = "New testing category"
-    data = {"title": new_category_title}
-
-    response = client.patch(
-        f"/goals/goal_category/{category.id}",
-        data,
-        content_type="application/json"
-    )
+    response = get_patch_response(client, category_for_user2)
 
     assert response.status_code == HTTPStatus.NOT_FOUND
 
@@ -364,17 +353,9 @@ def test_goal_category_partial_update_forbidden_to_reader(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2_user1_reader
+        category_for_board_user2_user1_reader
 ):
-    category, board = category_and_board_user2_user1_reader
-    new_category_title = "New testing category"
-    data = {"title": new_category_title}
-
-    response = client.patch(
-        f"/goals/goal_category/{category.id}",
-        data,
-        content_type="application/json"
-    )
+    response = get_patch_response(client, category_for_board_user2_user1_reader)
 
     assert response.status_code == HTTPStatus.FORBIDDEN
 
@@ -384,19 +365,13 @@ def test_goal_category_partial_update_allowed_to_writer(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2_user1_writer
+        category_for_board_user2_user1_writer
 ):
-    category, board = category_and_board_user2_user1_writer
-    new_category_title = "New testing category"
-    data = {"title": new_category_title}
-    expected_response = GoalCategorySerializer(category).data
-    expected_response["title"] = new_category_title
+    category = category_for_board_user2_user1_writer
+    response = get_patch_response(client, category)
 
-    response = client.patch(
-        f"/goals/goal_category/{category.id}",
-        data,
-        content_type="application/json"
-    )
+    expected_response = GoalCategorySerializer(category).data
+    expected_response["title"] = NEW_CATEGORY_NAME
 
     assert response.status_code == HTTPStatus.OK
 
@@ -411,9 +386,9 @@ def test_goal_category_partial_update_allowed_to_writer(
 def test_goal_category_delete_by_owner(
         client,
         logged_in_user,
-        category_and_board
+        category_for_user1
 ):
-    category, board = category_and_board
+    category = category_for_user1
     url = f"/goals/goal_category/{category.id}"
 
     response = client.delete(url)
@@ -430,9 +405,9 @@ def test_goal_category_delete_by_owner(
 def test_goal_category_delete_forbidden_to_unauthorized_user(
         client,
         user2,
-        category_and_board_user2
+        category_for_user2
 ):
-    category, board = category_and_board_user2
+    category = category_for_user2
     url = f"/goals/goal_category/{category.id}"
 
     response = client.delete(url)
@@ -444,9 +419,9 @@ def test_goal_category_delete_forbidden_to_user_wo_rights(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2
+        category_for_user2
 ):
-    category, board = category_and_board_user2
+    category = category_for_user2
     url = f"/goals/goal_category/{category.id}"
 
     response = client.delete(url)
@@ -458,9 +433,9 @@ def test_goal_category_delete_forbidden_to_reader(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2_user1_reader
+        category_for_board_user2_user1_reader
 ):
-    category, board = category_and_board_user2_user1_reader
+    category = category_for_board_user2_user1_reader
     url = f"/goals/goal_category/{category.id}"
 
     response = client.delete(url)
@@ -472,9 +447,9 @@ def test_goal_category_delete_allowed_to_writer(
         client,
         logged_in_user,
         user2,
-        category_and_board_user2_user1_writer
+        category_for_board_user2_user1_writer
 ):
-    category, board = category_and_board_user2_user1_writer
+    category = category_for_board_user2_user1_writer
     url = f"/goals/goal_category/{category.id}"
 
     response = client.delete(url)
