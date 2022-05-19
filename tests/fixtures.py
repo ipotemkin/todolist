@@ -8,6 +8,7 @@ USER_PASSWORD = "qwerty123"
 CATEGORY_NAME = "Testing category name"
 CATEGORY_NAME_2 = "Testing category name 2"
 GOAL_NAME = "Testing goal name"
+GOAL_NAME_2 = "Testing goal name 2"
 DUE_DATE = "2022-07-01"
 
 
@@ -107,6 +108,36 @@ def make_categories(user, board):
     category = GoalCategory.objects.create(title=CATEGORY_NAME, user=user, board=board)
     category_2 = GoalCategory.objects.create(title=CATEGORY_NAME_2, user=user, board=board)
     return category, category_2
+
+
+def make_goals(category):
+    goal = Goal.objects.create(title=GOAL_NAME, category=category, due_date=DUE_DATE)
+    goal_2 = Goal.objects.create(title=GOAL_NAME_2, category=category, due_date=DUE_DATE)
+    return goal, goal_2
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def goals_for_category(client, category_for_user1):
+    return make_goals(category_for_user1)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def goals_for_category_user2(client, category_for_user2):
+    return make_goals(category_for_user2)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def goals_for_category_user2_user1_reader(client, category_for_board_user2_user1_reader):
+    return make_goals(category_for_board_user2_user1_reader)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def goals_for_category_user2_user1_writer(client, category_for_board_user2_user1_writer):
+    return make_goals(category_for_board_user2_user1_writer)
 
 
 @pytest.fixture()
