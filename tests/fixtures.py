@@ -1,6 +1,6 @@
 import pytest
 
-from goals.models import Board, BoardParticipant, GoalCategory, Goal
+from goals.models import Board, BoardParticipant, GoalCategory, Goal, Comment
 
 TEST_USERNAME = "james"
 TEST_USERNAME_2 = "user2"
@@ -10,6 +10,8 @@ CATEGORY_NAME_2 = "Testing category name 2"
 GOAL_NAME = "Testing goal name"
 GOAL_NAME_2 = "Testing goal name 2"
 DUE_DATE = "2022-07-01"
+COMMENT_TEXT = "Testing comment"
+COMMENT_TEXT_2 = "Testing comment 2"
 
 
 @pytest.fixture()
@@ -116,6 +118,12 @@ def make_goals(category):
     return goal, goal_2
 
 
+def make_comments(goal, user):
+    comment = Comment.objects.create(text=COMMENT_TEXT, goal=goal, user=user)
+    comment_2 = Comment.objects.create(text=COMMENT_TEXT_2, goal=goal, user=user)
+    return comment, comment_2
+
+
 @pytest.fixture()
 @pytest.mark.django_db
 def goals_for_category(client, category_for_user1):
@@ -216,3 +224,87 @@ def category_for_board_user2_user1_writer(
         client, board, user1, user2, boardparticipant_user1_writer
 ):
     return GoalCategory.objects.create(title=CATEGORY_NAME, user=user1, board=board)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comment(client, user1, goal_for_category):
+    return Comment.objects.create(
+        text=COMMENT_TEXT,
+        goal=goal_for_category,
+        user=user1
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comment_for_goal_user2(client, user1, goal_for_category_user2):
+    return Comment.objects.create(
+        text=COMMENT_TEXT,
+        goal=goal_for_category_user2,
+        user=user1
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comment_for_goal_user2_user1_reader(client, user1, goal_for_category_user2_user1_reader):
+    return Comment.objects.create(
+        text=COMMENT_TEXT,
+        goal=goal_for_category_user2_user1_reader,
+        user=user1
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comment_user2_for_goal_user2_user1_reader(client, user2, goal_for_category_user2_user1_reader):
+    return Comment.objects.create(
+        text=COMMENT_TEXT,
+        goal=goal_for_category_user2_user1_reader,
+        user=user2
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comment_user2_for_goal_user2_user1_writer(client, user2, goal_for_category_user2_user1_writer):
+    return Comment.objects.create(
+        text=COMMENT_TEXT,
+        goal=goal_for_category_user2_user1_writer,
+        user=user2
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comment_for_goal_user2_user1_writer(client, user1, goal_for_category_user2_user1_writer):
+    return Comment.objects.create(
+        text=COMMENT_TEXT,
+        goal=goal_for_category_user2_user1_writer,
+        user=user1
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comments(client, user1, goal_for_category):
+    return make_comments(goal_for_category, user1)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comments_for_goal_user2(client, user2, goal_for_category_user2):
+    return make_comments(goal_for_category_user2, user2)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comments_for_goal_user2_user1_reader(client, user2, goal_for_category_user2_user1_reader):
+    return make_comments(goal_for_category_user2_user1_reader, user2)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def comments_for_goal_user2_user1_writer(client, user2, goal_for_category_user2_user1_writer):
+    return make_comments(goal_for_category_user2_user1_writer, user2)
