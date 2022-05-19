@@ -6,7 +6,7 @@ from goals.models import GoalCategory
 
 
 @pytest.mark.django_db
-def test_goal_category_delete_by_owner(
+def test_delete_by_owner(
         client,
         logged_in_user,
         category_for_user1
@@ -25,7 +25,7 @@ def test_goal_category_delete_by_owner(
 
 
 @pytest.mark.django_db
-def test_goal_category_delete_forbidden_to_unauthorized_user(
+def test_delete_forbidden_to_unauthorized_user(
         client,
         user2,
         category_for_user2
@@ -38,7 +38,7 @@ def test_goal_category_delete_forbidden_to_unauthorized_user(
 
 
 @pytest.mark.django_db
-def test_goal_category_delete_forbidden_to_user_wo_rights(
+def test_delete_forbidden_to_user_wo_rights(
         client,
         logged_in_user,
         user2,
@@ -52,7 +52,7 @@ def test_goal_category_delete_forbidden_to_user_wo_rights(
 
 
 @pytest.mark.django_db
-def test_goal_category_delete_forbidden_to_reader(
+def test_delete_forbidden_to_reader(
         client,
         logged_in_user,
         user2,
@@ -66,7 +66,7 @@ def test_goal_category_delete_forbidden_to_reader(
 
 
 @pytest.mark.django_db
-def test_goal_category_delete_allowed_to_writer(
+def test_delete_allowed_to_writer(
         client,
         logged_in_user,
         user2,

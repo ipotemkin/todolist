@@ -6,7 +6,7 @@ from goals.serializers import GoalCategorySerializer
 
 
 @pytest.mark.django_db
-def test_goal_category_get_one_by_owner(
+def test_get_one_by_owner(
         client,
         logged_in_user,
         category_for_user1
@@ -21,7 +21,7 @@ def test_goal_category_get_one_by_owner(
 
 
 @pytest.mark.django_db
-def test_goal_category_get_one_forbidden_to_user_wo_rights(
+def test_get_one_forbidden_to_user_wo_rights(
         client,
         logged_in_user,
         category_for_user2
@@ -34,7 +34,7 @@ def test_goal_category_get_one_forbidden_to_user_wo_rights(
 
 
 @pytest.mark.django_db
-def test_goal_category_get_one_forbidden_to_unauthorized_user(
+def test_get_one_forbidden_to_unauthorized_user(
         client,
         category_for_user2
 ):
@@ -46,7 +46,7 @@ def test_goal_category_get_one_forbidden_to_unauthorized_user(
 
 
 @pytest.mark.django_db
-def test_goal_category_get_one_allowed_to_reader(
+def test_get_one_allowed_to_reader(
         client,
         logged_in_user,
         category_for_board_user2_user1_reader
@@ -61,7 +61,7 @@ def test_goal_category_get_one_allowed_to_reader(
 
 
 @pytest.mark.django_db
-def test_goal_category_get_one_allowed_to_writer(
+def test_get_one_allowed_to_writer(
         client,
         logged_in_user,
         category_for_board_user2_user1_writer
@@ -83,7 +83,7 @@ def test_goal_category_not_found(client, logged_in_user):
 
 
 @pytest.mark.django_db
-def test_goal_category_not_found_for_user_wo_rights(
+def test_not_found_for_user_wo_rights(
         client,
         logged_in_user,
         user2,
