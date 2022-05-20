@@ -55,6 +55,13 @@ def board(client):
 
 @pytest.fixture()
 @pytest.mark.django_db
+def board2(client):
+    board_name = "Testing board name 2"
+    return Board.objects.create(title=board_name)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
 def category_for_user1(client, user1, board, boardparticipant_user1_owner):
     return GoalCategory.objects.create(title=CATEGORY_NAME, user=user1, board=board)
 
@@ -184,6 +191,12 @@ def boardparticipant_user1_owner(client, board, user1):
 
 @pytest.fixture()
 @pytest.mark.django_db
+def boardparticipant_board2_user1_owner(client, board2, user1):
+    return BoardParticipant.objects.create(board=board2, user=user1)
+
+
+@pytest.fixture()
+@pytest.mark.django_db
 def boardparticipant_user2_owner(client, board, user2):
     return BoardParticipant.objects.create(board=board, user=user2)
 
@@ -198,9 +211,25 @@ def boardparticipant_user1_reader(client, board, user1):
 
 @pytest.fixture()
 @pytest.mark.django_db
+def boardparticipant_board2_user1_reader(client, board2, user1):
+    return BoardParticipant.objects.create(
+        board=board2, user=user1, role=BoardParticipant.Role.reader
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
 def boardparticipant_user1_writer(client, board, user1):
     return BoardParticipant.objects.create(
         board=board, user=user1, role=BoardParticipant.Role.writer
+    )
+
+
+@pytest.fixture()
+@pytest.mark.django_db
+def boardparticipant_board2_user1_writer(client, board2, user1):
+    return BoardParticipant.objects.create(
+        board=board2, user=user1, role=BoardParticipant.Role.writer
     )
 
 
