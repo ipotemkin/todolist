@@ -1,3 +1,5 @@
+from typing import List
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -10,13 +12,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         read_only_fields = ('id',)
-        fields = (
+        fields = [
             'id',
             'username',
             'first_name',
             'last_name',
             'email',
-        )
+        ]
 
 
 class CreateUserSerializer(UserSerializer):
@@ -24,7 +26,7 @@ class CreateUserSerializer(UserSerializer):
     password_repeat = serializers.CharField(write_only=True)
 
     class Meta(UserSerializer.Meta):
-        fields = (
+        fields = [
             'id',
             'username',
             'first_name',
@@ -32,10 +34,10 @@ class CreateUserSerializer(UserSerializer):
             'email',
             'password',
             'password_repeat'
-        )
+        ]
 
     def validate(self, attrs: dict) -> dict:
-        password: str = attrs.get('password')
+        password: str = attrs.get('password', None)
         password_repeat: str = attrs.pop('password_repeat', None)
         if password != password_repeat:
             raise ValidationError('passwords are not equal')

@@ -1,10 +1,12 @@
+import re
+
 from django.core.cache import cache
 
 import os
 from enum import Enum, unique, auto
 from typing import Optional
 
-from datetime import date
+from datetime import date, datetime
 
 from django.core.management import BaseCommand
 from django.db.models import Q
@@ -67,6 +69,19 @@ def update_tsm_state(chat_id: int, fsm: FSMData) -> bool:
 
 def del_fsm_state(chat_id: int) -> bool:
     return cache.delete(chat_id)
+
+
+def str2date(s: str) -> Optional[date]:
+    match = re.match(r'^([0-9]{4})[.\-/ ]{0,1}([0-9]{2})[.\-/ ]{0,1}([0-9]{2})$', s)
+    if not match:
+        return None
+
+    try:
+        res = date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+    except ValueError:
+        return None
+
+    return res
 
 
 OWNER_WRITER = (
@@ -262,7 +277,14 @@ class Command(BaseCommand):
             return
 
         goal: NewGoal = fsm_state.goal
-        goal.due_date = msg.text
+        goal.due_date = str2date(msg.text)
+
+        if not goal.due_date:
+            self.tg_client.send_message(
+                chat_id=msg.chat.id, text='[wrong date or date format; should be yyyy-mm-dd]'
+            )
+            return
+
         if goal.complete():
             Goal.objects.create(
                 title=goal.goal_title,
@@ -357,7 +379,7 @@ class Command(BaseCommand):
         tg_user, created = TgUser.objects.get_or_create(
             chat_id=msg.chat.id,
             defaults={
-                'username': msg.from_.username or msg.from_.first_name + msg.from_.last_name
+                'username': msg.from_.username or str(msg.from_.first_name) + str(msg.from_.last_name)
             }
         )
         if created:

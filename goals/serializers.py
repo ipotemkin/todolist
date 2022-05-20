@@ -11,8 +11,8 @@ from goals.models import GoalCategory, Goal, Comment, Board, BoardParticipant
 class CreatePermissionsModelSerializer(serializers.ModelSerializer):
     """To check permissions while creating objects"""
 
-    class Meta:
-        model = None
+    # class Meta:
+    #     model = None
 
     def create(self, validated_data):
         obj = self.Meta.model(**self.validated_data)
@@ -29,7 +29,7 @@ class GoalCategoryCreateSerializer(CreatePermissionsModelSerializer):
 
     class Meta:
         model = GoalCategory
-        read_only_fields = ("id", "created", "updated", "user")
+        read_only_fields = ["id", "created", "updated", "user"]
         fields = "__all__"
 
 
@@ -57,7 +57,7 @@ class GoalCategoryReadSerializer(GoalCategoryCreateSerializer):
     user = UserSerializer(read_only=True)
 
     class Meta(GoalCategoryCreateSerializer.Meta):
-        read_only_fields = ("id", "created", "updated", "user", "title", "board")
+        read_only_fields = ["id", "created", "updated", "user", "title", "board"]
 
 
 # to speed up performance
@@ -74,7 +74,7 @@ class GoalCategoryReadSimpleSerializer(serializers.Serializer):
 class GoalCreateSerializer(CreatePermissionsModelSerializer):
     class Meta:
         model = Goal
-        read_only_fields = ("id", "created", "updated")
+        read_only_fields = ["id", "created", "updated"]
         fields = "__all__"
 
     def validate_category(self, value):
@@ -87,7 +87,7 @@ class GoalSerializer(GoalCreateSerializer):
     board = serializers.IntegerField(source="category.board_id", read_only=True)
 
     class Meta(GoalCreateSerializer.Meta):
-        read_only_fields = ("id", "created", "updated", "category")
+        read_only_fields = ["id", "created", "updated", "category"]
 
     def validate_is_deleted(self, value):
         if value:
@@ -100,7 +100,7 @@ class CommentCreateSerializer(CreatePermissionsModelSerializer):
 
     class Meta:
         model = Comment
-        read_only_fields = ("id", "created", "updated")
+        read_only_fields = ["id", "created", "updated"]
         fields = "__all__"
 
     def validate_goal(self, value):
@@ -113,7 +113,7 @@ class CommentSerializer(CommentCreateSerializer):
     user = UserSerializer(read_only=True)
 
     class Meta(CommentCreateSerializer.Meta):
-        read_only_fields = ("id", "created", "updated", "goal")
+        read_only_fields = ["id", "created", "updated", "goal"]
 
 
 class BoardCreateSerializer(serializers.ModelSerializer):
