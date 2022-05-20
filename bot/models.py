@@ -4,13 +4,15 @@ from core.models import User
 
 
 class TgUser(models.Model):
-    chat_id = models.PositiveBigIntegerField(verbose_name="Telegram chat_id", unique=True)
+    chat_id = models.PositiveBigIntegerField(
+        verbose_name="Telegram chat_id", unique=True
+    )
     username = models.CharField(
         verbose_name="Telegram user_ud",
         max_length=255,
         null=True,
         blank=True,
-        default=None
+        default=None,
     )
     user = models.ForeignKey(
         User,
@@ -18,7 +20,7 @@ class TgUser(models.Model):
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        default=None
+        default=None,
     )
     # verification_code = models.CharField(
     #     verbose_name="Код подтверждения",

@@ -3,7 +3,7 @@ from rest_framework.generics import (
     CreateAPIView,
     GenericAPIView,
     RetrieveUpdateDestroyAPIView,
-    UpdateAPIView
+    UpdateAPIView,
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -15,15 +15,14 @@ from core.serializers import (
     CreateUserSerializer,
     LoginSerializer,
     UserSerializer,
-    UpdatePasswordSerializer, LoginResponseSerializer
+    UpdatePasswordSerializer,
+    LoginResponseSerializer,
 )
 
 
 def login_model_backend(request, user) -> None:
     login(
-        request=request,
-        user=user,
-        backend='django.contrib.auth.backends.ModelBackend'
+        request=request, user=user, backend="django.contrib.auth.backends.ModelBackend"
     )
 
 
@@ -36,7 +35,7 @@ class SignupView(CreateAPIView):
         ret = super().post(request, *args, **kwargs)
 
         # to log in the app; the front doesn't do it! ((
-        user = User.objects.get(username=ret.data['username'])
+        user = User.objects.get(username=ret.data["username"])
         login_model_backend(request, user=user)
 
         return ret

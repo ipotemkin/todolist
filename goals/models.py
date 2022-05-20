@@ -8,7 +8,9 @@ class DatesModelMixin(models.Model):
         abstract = True
 
     created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
-    updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now=True)
+    updated = models.DateTimeField(
+        verbose_name="Дата последнего обновления", auto_now=True
+    )
 
 
 class FieldIsDeletedMixin(models.Model):
@@ -31,7 +33,10 @@ class GoalCategory(DatesModelMixin, FieldIsDeletedMixin):
     title = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(User, verbose_name="Автор", on_delete=models.PROTECT)
     board = models.ForeignKey(
-        'Board', verbose_name="Доска", on_delete=models.PROTECT, related_name="categories"
+        "Board",
+        verbose_name="Доска",
+        on_delete=models.PROTECT,
+        related_name="categories",
     )
 
     def __str__(self):
@@ -56,22 +61,20 @@ class Goal(DatesModelMixin, FieldIsDeletedMixin):
         critical = 4, "Критический"
 
     title = models.CharField(verbose_name="Название", max_length=255)
-    description = models.CharField(verbose_name="Описание", max_length=255, null=True, blank=True)
+    description = models.CharField(
+        verbose_name="Описание", max_length=255, null=True, blank=True
+    )
     category = models.ForeignKey(
         GoalCategory,
         verbose_name="Категория",
         on_delete=models.PROTECT,
-        related_name="goals"
+        related_name="goals",
     )
     status = models.PositiveSmallIntegerField(
-        verbose_name="Статус",
-        choices=Status.choices,
-        default=Status.to_do
+        verbose_name="Статус", choices=Status.choices, default=Status.to_do
     )
     priority = models.PositiveSmallIntegerField(
-        verbose_name="Приоритет",
-        choices=Priority.choices,
-        default=Priority.medium
+        verbose_name="Приоритет", choices=Priority.choices, default=Priority.medium
     )
     due_date = models.DateField(verbose_name="Дата дедлайна")
 

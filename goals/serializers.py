@@ -16,8 +16,8 @@ class CreatePermissionsModelSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         obj = self.Meta.model(**self.validated_data)
-        view = self._context['view']
-        request = self._context['request']
+        view = self._context["view"]
+        request = self._context["request"]
         for permission in view.permission_classes:
             if not permission.has_object_permission(self, request, view, obj):
                 raise PermissionDenied
@@ -37,7 +37,7 @@ class GoalCategorySerializer(GoalCategoryCreateSerializer):
     user = UserSerializer(read_only=True)
 
     # проверить работу приложения – возможны ошибки с этой строчкой
-    board = serializers.IntegerField(source='board_id', read_only=True)
+    board = serializers.IntegerField(source="board_id", read_only=True)
 
     # user = serializers.IntegerField(source='user_id', read_only=True)
 
@@ -134,13 +134,9 @@ class BoardCreateSerializer(serializers.ModelSerializer):
 
 
 class BoardParticipantSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(
-        required=True,
-        choices=BoardParticipant.Role.choices
-    )
+    role = serializers.ChoiceField(required=True, choices=BoardParticipant.Role.choices)
     user = serializers.SlugRelatedField(
-        slug_field="username",
-        queryset=User.objects.all()
+        slug_field="username", queryset=User.objects.all()
     )
 
     class Meta:
@@ -169,15 +165,18 @@ class BoardSerializer(serializers.ModelSerializer):
                 if old_participant.user_id not in new_by_id:
                     old_participant.delete()
                 else:
-                    if old_participant.role != new_by_id[old_participant.user_id]["role"]:
-                        old_participant.role = new_by_id[old_participant.user_id]["role"]
+                    if (
+                        old_participant.role
+                        != new_by_id[old_participant.user_id]["role"]
+                    ):
+                        old_participant.role = new_by_id[old_participant.user_id][
+                            "role"
+                        ]
                         old_participant.save()
                     new_by_id.pop(old_participant.user_id)
             for new_part in new_by_id.values():
                 BoardParticipant.objects.create(
-                    board=instance,
-                    user=new_part["user"],
-                    role=new_part["role"]
+                    board=instance, user=new_part["user"], role=new_part["role"]
                 )
 
             instance.title = validated_data["title"]

@@ -18,18 +18,15 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    path('oauth/', include('social_django.urls', namespace='social')),
-    path('core/', include('core.urls')),
-    path('goals/', include('goals.urls')),
-    path('health/', health_check),  # namespace='health_check'),
-    path('bot/', include('bot.urls', namespace='bot')),
-
+    path("admin/", admin.site.urls),
+    path("oauth/", include("social_django.urls", namespace="social")),
+    path("core/", include("core.urls")),
+    path("goals/", include("goals.urls")),
+    path("health/", health_check),  # namespace='health_check'),
+    path("bot/", include("bot.urls", namespace="bot")),
     re_path(
-        '' if NO_FRONT else r'^swagger/$',
-        schema_view.with_ui('swagger', cache_timeout=0),
-        name='schema-swagger-ui',
+        "" if NO_FRONT else r"^swagger/$",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
     ),
-
 ]

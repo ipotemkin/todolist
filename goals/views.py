@@ -6,7 +6,7 @@ from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
     RetrieveUpdateDestroyAPIView,
-    GenericAPIView
+    GenericAPIView,
 )
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
@@ -18,7 +18,7 @@ from goals.permissions import (
     GoalCategoryPermissions,
     GoalPermissions,
     CommentPermissions,
-    CommentCreatePermissions
+    CommentCreatePermissions,
 )
 from goals.serializers import (
     GoalCategoryCreateSerializer,
@@ -49,17 +49,14 @@ class GoalCategoryMixin(GenericAPIView):
     permission_classes = (IsAuthenticated, GoalCategoryPermissions)
 
     def get_queryset(self):
-        query = (
-                Q(board__participants__user__username=self.request.user)
-                &
-                Q(is_deleted=False)
+        query = Q(board__participants__user__username=self.request.user) & Q(
+            is_deleted=False
         )
         return (
             GoalCategory.objects
             # .prefetch_related('board', 'user')  # 5 queries
             # .select_related('board', 'user')  # 3 queries
-            .select_related('user')  # 3 queries
-            .filter(query)  # 13 queries
+            .select_related("user").filter(query)  # 3 queries  # 13 queries
         )
         # количество запросов оптимизировано с 13 до 3
 
@@ -106,14 +103,10 @@ class GoalMixin(GenericAPIView):
     serializer_class = GoalSerializer
 
     def get_queryset(self):
-        return (
-            Goal.objects
-            .select_related('category')  # 3 queries
-            .filter(
-                category__board__participants__user__username=self.request.user,
-                is_deleted=False
-            )  # 15 queries
-        )
+        return Goal.objects.select_related("category").filter(  # 3 queries
+            category__board__participants__user__username=self.request.user,
+            is_deleted=False,
+        )  # 15 queries
         # количество запросов оптимизировано с 15 до 3
 
 
@@ -153,11 +146,9 @@ class CommentMixin(GenericAPIView):
             Comment.objects
             # .select_related('goal')  # 14 queries
             # .select_related('user')  # 13 queries
-
             # 12 queries
-            .select_related('user')
-            .select_related('goal__category__board')
-
+            .select_related("user")
+            .select_related("goal__category__board")
             .all()  # 14 queries
         )
         # Количество запросов было оптимизировано с 14 до 12,
@@ -201,7 +192,9 @@ class BoardMixin(GenericAPIView):
         # return Board.objects.filter(participants__user=self.request.user, is_deleted=False)
 
         # после добавления id ошибка исчезла => нужно протестить
-        return Board.objects.filter(participants__user=self.request.user.id, is_deleted=False)
+        return Board.objects.filter(
+            participants__user=self.request.user.id, is_deleted=False
+        )
 
 
 class BoardView(RetrieveUpdateDestroyAPIView, BoardMixin):

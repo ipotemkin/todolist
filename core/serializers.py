@@ -1,5 +1,3 @@
-from typing import List
-
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -11,13 +9,13 @@ from core.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        read_only_fields = ('id',)
+        read_only_fields = ("id",)
         fields = [
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'email',
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
         ]
 
 
@@ -27,20 +25,20 @@ class CreateUserSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
         fields = [
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'password',
-            'password_repeat'
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "password",
+            "password_repeat",
         ]
 
     def validate(self, attrs: dict) -> dict:
-        password: str = attrs.get('password', None)
-        password_repeat: str = attrs.pop('password_repeat', None)
+        password: str = attrs.get("password", None)
+        password_repeat: str = attrs.pop("password_repeat", None)
         if password != password_repeat:
-            raise ValidationError('passwords are not equal')
+            raise ValidationError("passwords are not equal")
         return attrs
 
     def create(self, validated_data) -> User:
@@ -75,21 +73,23 @@ class LoginSerializer(LoginResponseSerializer):
 
 class UpdatePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True, validators=[validate_password])
+    new_password = serializers.CharField(
+        write_only=True, validators=[validate_password]
+    )
 
     class Meta:
         model = User
-        read_only_fields = ('id',)
-        fields = ('old_password', 'new_password')
+        read_only_fields = ("id",)
+        fields = ("old_password", "new_password")
 
     def validate(self, attrs: dict) -> dict:
-        old_password = attrs.get('old_password')
+        old_password = attrs.get("old_password")
         user: User = self.instance
         if not user.check_password(old_password):
-            raise ValidationError({'old_password': 'fields is incorrect'})
+            raise ValidationError({"old_password": "fields is incorrect"})
         return attrs
 
     def update(self, instance: User, validated_data) -> User:
-        instance.set_password(validated_data['new_password'])
-        instance.save(update_fields=['password'])
+        instance.set_password(validated_data["new_password"])
+        instance.save(update_fields=["password"])
         return instance
