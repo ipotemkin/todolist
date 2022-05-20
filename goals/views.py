@@ -31,7 +31,7 @@ from goals.serializers import (
     BoardListSerializer,
     BoardCreateSerializer,
     GoalCategoryReadSerializer,
-    GoalCategoryReadSimpleSerializer
+    # GoalCategoryReadSimpleSerializer
 )
 
 # from time import perf_counter

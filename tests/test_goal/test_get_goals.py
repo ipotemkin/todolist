@@ -20,7 +20,7 @@ def test_get_all_by_owner(
     response = client.get("/goals/goal/list")
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == expected_response
+    assert sorted(response.json(), key=lambda x: x['id']) == expected_response
 
 
 @pytest.mark.django_db
@@ -61,7 +61,7 @@ def test_get_all_allowed_to_reader(
     response = client.get("/goals/goal/list")
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == expected_response
+    assert sorted(response.json(), key=lambda x: x['id']) == expected_response
 
 
 @pytest.mark.django_db
@@ -79,4 +79,4 @@ def test_get_all_allowed_to_writer(
     response = client.get("/goals/goal/list")
 
     assert response.status_code == HTTPStatus.OK
-    assert response.json() == expected_response
+    assert sorted(response.json(), key=lambda x: x['id']) == expected_response
