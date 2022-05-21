@@ -112,7 +112,6 @@ def goal_for_category_user2_user1_writer(
     )
 
 
-
 def make_categories(user, board):
     category = GoalCategory.objects.create(title=CATEGORY_NAME, user=user, board=board)
     category_2 = GoalCategory.objects.create(title=CATEGORY_NAME_2, user=user, board=board)
