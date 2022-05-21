@@ -19,6 +19,7 @@ env = environ.Env(
     SOCIAL_AUTH_VK_OAUTH2_SECRET=(str, "example"),
     NO_FRONT=(bool, False),
     REDIS_HOST=(str, "localhost"),
+    BOT_TOKEN=(str, "testing-bot-token")
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
