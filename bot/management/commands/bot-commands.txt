@@ -1,0 +1,7 @@
+boards - Get a list of boards
+cats - Get a list of categories
+goals - Get a list of goals
+create_cat - Create a category
+create_goal - Create a goal
+delete_goal - Delete a goal
+goal_done - Mark a goal as done
