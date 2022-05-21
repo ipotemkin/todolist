@@ -47,3 +47,5 @@
 - PyDantic
 
 Полный список зависимостей в requirements.txt
+
+pre-commit test
