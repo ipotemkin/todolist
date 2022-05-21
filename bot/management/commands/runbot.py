@@ -51,7 +51,7 @@ StatusSymbol = {
     Goal.Status.to_do: "▶",
     Goal.Status.in_progress: "⏳",
     Goal.Status.done: "✅",
-    Goal.Status.archived: "❎"
+    Goal.Status.archived: "❎",
 }
 
 
@@ -157,7 +157,10 @@ class Command(BaseCommand):
 
         text = ""
         fsm_state = get_fsm_state(tg_user.chat_id)
-        if fsm_state and fsm_state.state in (StateEnum.CHOOSE_GOAL, StateEnum.CHOOSE_GOAL_TO_DONE):
+        if fsm_state and fsm_state.state in (
+            StateEnum.CHOOSE_GOAL,
+            StateEnum.CHOOSE_GOAL_TO_DONE,
+        ):
             text = "Select goal:\n"
 
         if resp_goals:
@@ -338,7 +341,8 @@ class Command(BaseCommand):
 
     def handle_mark_goal_done(self, msg: Message, tg_user: TgUser):
         set_fsm_state(
-            tg_user.chat_id, FSMData(state=StateEnum.CHOOSE_GOAL_TO_DONE, goal=NewGoal())
+            tg_user.chat_id,
+            FSMData(state=StateEnum.CHOOSE_GOAL_TO_DONE, goal=NewGoal()),
         )
         self.handle_goal_list(msg=msg, tg_user=tg_user)
 
