@@ -36,6 +36,7 @@ class StateEnum(Enum):
     CHOOSE_BOARD = auto()
     CHOSEN_BOARD = auto()
     CHOOSE_GOAL = auto()
+    CHOOSE_GOAL_TO_DONE = auto()
     # CHOSEN_GOAL = auto()
     # CREATE_CATEGORY = auto()
 
@@ -44,6 +45,14 @@ class FSMData(BaseModel):
     state: StateEnum
     goal: NewGoal
     board_id: Optional[int] = None
+
+
+StatusSymbol = {
+    Goal.Status.to_do: "▶",
+    Goal.Status.in_progress: "⏳",
+    Goal.Status.done: "✅",
+    Goal.Status.archived: "❎"
+}
 
 
 def set_fsm_state(chat_id: int, fsm: FSMData, timeout=None):
@@ -142,13 +151,13 @@ class Command(BaseCommand):
 
     def handle_goal_list(self, msg: Message, tg_user: TgUser):
         resp_goals: list[str] = [
-            f"#{goal.id} {goal.title} срок:{goal.due_date} статус: {Goal.Status(goal.status).label}"
+            f"#{goal.id} {goal.title} | 🕒 {goal.due_date} | {StatusSymbol[Goal.Status(goal.status)]}"
             for goal in Goal.objects.filter(self._get_goal_query(tg_user))
         ]
 
         text = ""
         fsm_state = get_fsm_state(tg_user.chat_id)
-        if fsm_state and fsm_state.state == StateEnum.CHOOSE_GOAL:
+        if fsm_state and fsm_state.state in (StateEnum.CHOOSE_GOAL, StateEnum.CHOOSE_GOAL_TO_DONE):
             text = "Select goal:\n"
 
         if resp_goals:
@@ -327,6 +336,29 @@ class Command(BaseCommand):
 
         self.tg_client.send_message(chat_id=msg.chat.id, text="[invalid goal id]")
 
+    def handle_mark_goal_done(self, msg: Message, tg_user: TgUser):
+        set_fsm_state(
+            tg_user.chat_id, FSMData(state=StateEnum.CHOOSE_GOAL_TO_DONE, goal=NewGoal())
+        )
+        self.handle_goal_list(msg=msg, tg_user=tg_user)
+
+    def handle_mark_selected_goal_done(self, msg: Message, tg_user: TgUser):
+        if msg.text.isdigit():
+            goal_id = int(msg.text)
+            goal = Goal.objects.filter(
+                self._get_goal_query(tg_user, and_=Q(id=goal_id))
+            ).first()
+            if goal:
+                goal.status = Goal.Status.done
+                goal.save(update_fields=["status"])
+                self.tg_client.send_message(
+                    chat_id=msg.chat.id, text="[goal has been marked as done]"
+                )
+                del_fsm_state(tg_user.chat_id)
+                return
+
+        self.tg_client.send_message(chat_id=msg.chat.id, text="[invalid goal id]")
+
     def handle_verified_user(self, msg: Message, tg_user: TgUser):
         if msg.text == "/goals":
             self.handle_goal_list(msg=msg, tg_user=tg_user)
@@ -345,6 +377,9 @@ class Command(BaseCommand):
 
         elif msg.text == "/delete_goal":
             self.handle_delete_goal(msg=msg, tg_user=tg_user)
+
+        elif msg.text == "/goal_done":
+            self.handle_mark_goal_done(msg=msg, tg_user=tg_user)
 
         elif msg.text == "/cancel":
             del_fsm_state(tg_user.chat_id)
@@ -369,6 +404,9 @@ class Command(BaseCommand):
 
             if state == StateEnum.CHOOSE_GOAL:
                 self.handle_delete_selected_goal(msg=msg, tg_user=tg_user)
+
+            if state == StateEnum.CHOOSE_GOAL_TO_DONE:
+                self.handle_mark_selected_goal_done(msg=msg, tg_user=tg_user)
 
         elif msg.text.startswith("/"):
             self.tg_client.send_message(chat_id=msg.chat.id, text="[unknown command]")
