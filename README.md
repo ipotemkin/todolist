@@ -48,4 +48,4 @@
 
 Полный список зависимостей в requirements.txt
 
-pre-commit test
+pre-commit test 2
