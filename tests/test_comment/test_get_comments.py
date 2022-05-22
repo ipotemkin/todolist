@@ -4,15 +4,11 @@ import pytest
 
 from goals.serializers import CommentSerializer
 
-URL = '/goals/goal_comment/list'
+URL = "/goals/goal_comment/list"
 
 
 @pytest.mark.django_db
-def test_get_all_by_owner(
-        client,
-        logged_in_user,
-        comments
-):
+def test_get_all_by_owner(client, logged_in_user, comments):
     comment_1, comment_2 = comments
 
     expected_response = [
@@ -27,9 +23,7 @@ def test_get_all_by_owner(
 
 @pytest.mark.django_db
 def test_get_all_forbidden_to_user_wo_rights(
-        client,
-        logged_in_user,
-        goals_for_category_user2
+    client, logged_in_user, goals_for_category_user2
 ):
     response = client.get(URL)
 
@@ -38,10 +32,7 @@ def test_get_all_forbidden_to_user_wo_rights(
 
 
 @pytest.mark.django_db
-def test_get_all_forbidden_to_unauthorized_user(
-        client,
-        comments
-):
+def test_get_all_forbidden_to_unauthorized_user(client, comments):
     response = client.get(URL)
 
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -49,9 +40,7 @@ def test_get_all_forbidden_to_unauthorized_user(
 
 @pytest.mark.django_db
 def test_get_all_allowed_to_reader(
-        client,
-        logged_in_user,
-        comments_for_goal_user2_user1_reader
+    client, logged_in_user, comments_for_goal_user2_user1_reader
 ):
     comment_1, comment_2 = comments_for_goal_user2_user1_reader
 
@@ -67,9 +56,7 @@ def test_get_all_allowed_to_reader(
 
 @pytest.mark.django_db
 def test_get_all_allowed_to_writer(
-        client,
-        logged_in_user,
-        comments_for_goal_user2_user1_writer
+    client, logged_in_user, comments_for_goal_user2_user1_writer
 ):
     comment_1, comment_2 = comments_for_goal_user2_user1_writer
 

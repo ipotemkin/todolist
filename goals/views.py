@@ -56,7 +56,7 @@ class GoalCategoryMixin(GenericAPIView):
             GoalCategory.objects
             # .prefetch_related('board', 'user')  # 5 queries
             # .select_related('board', 'user')  # 3 queries
-            .select_related('user').filter(query)  # 3 queries  # 13 queries
+            .select_related("user").filter(query)  # 3 queries  # 13 queries
         )
         # количество запросов оптимизировано с 13 до 3
 
@@ -70,10 +70,10 @@ class GoalCategoryListView(ListAPIView, GoalCategoryMixin):
         SearchFilter,
         DjangoFilterBackend,
     )
-    ordering_fields = ['title', 'created']
-    ordering = ['title']
-    search_fields = ['title']
-    filterset_fields = ['board']
+    ordering_fields = ["title", "created"]
+    ordering = ["title"]
+    search_fields = ["title"]
+    filterset_fields = ["board"]
 
     # def list(self, request, *args, **kwargs):
     #     start = perf_counter()
@@ -103,7 +103,7 @@ class GoalMixin(GenericAPIView):
     serializer_class = GoalSerializer
 
     def get_queryset(self):
-        return Goal.objects.select_related('category').filter(  # 3 queries
+        return Goal.objects.select_related("category").filter(  # 3 queries
             category__board__participants__user__username=self.request.user,
             is_deleted=False,
         )  # 15 queries
@@ -118,9 +118,9 @@ class GoalListView(ListAPIView, GoalMixin):
         DjangoFilterBackend,
     )
     filterset_class = GoalDataFilter
-    ordering_fields = ['priority', 'due_date']
-    ordering = ['-priority', 'due_date']
-    search_fields = ['title', 'description']
+    ordering_fields = ["priority", "due_date"]
+    ordering = ["-priority", "due_date"]
+    search_fields = ["title", "description"]
 
 
 class GoalView(RetrieveUpdateDestroyAPIView, GoalMixin):
@@ -147,8 +147,8 @@ class CommentMixin(GenericAPIView):
             # .select_related('goal')  # 14 queries
             # .select_related('user')  # 13 queries
             # 12 queries
-            .select_related('user')
-            .select_related('goal__category__board')
+            .select_related("user")
+            .select_related("goal__category__board")
             .all()  # 14 queries
         )
         # Количество запросов было оптимизировано с 14 до 12,
@@ -167,9 +167,9 @@ class CommentListView(ListAPIView, CommentMixin):
         OrderingFilter,
         DjangoFilterBackend,
     )
-    ordering_fields = ('created', 'updated')
-    ordering = ('-created',)
-    filterset_fields = ['goal']
+    ordering_fields = ("created", "updated")
+    ordering = ("-created",)
+    filterset_fields = ["goal"]
 
 
 class CommentView(RetrieveUpdateDestroyAPIView, CommentMixin):
@@ -211,5 +211,5 @@ class BoardListView(ListAPIView, BoardMixin):
     serializer_class = BoardListSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = (OrderingFilter,)
-    ordering_fields = ('title',)
-    ordering = ('title',)
+    ordering_fields = ("title",)
+    ordering = ("title",)

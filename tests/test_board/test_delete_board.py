@@ -4,16 +4,11 @@ import pytest
 
 from goals.models import Board
 
-URL = '/goals/board/{}'
+URL = "/goals/board/{}"
 
 
 @pytest.mark.django_db
-def test_delete_by_owner(
-        client,
-        logged_in_user,
-        board,
-        boardparticipant_user1_owner
-):
+def test_delete_by_owner(client, logged_in_user, board, boardparticipant_user1_owner):
     url = URL.format(board.id)
 
     response = client.delete(url)
@@ -28,9 +23,7 @@ def test_delete_by_owner(
 
 @pytest.mark.django_db
 def test_delete_forbidden_to_unauthorized_user(
-        client,
-        board,
-        boardparticipant_user1_owner
+    client, board, boardparticipant_user1_owner
 ):
     url = URL.format(board.id)
     response = client.delete(url)
@@ -39,10 +32,7 @@ def test_delete_forbidden_to_unauthorized_user(
 
 @pytest.mark.django_db
 def test_delete_forbidden_to_user_wo_rights(
-        client,
-        logged_in_user,
-        board,
-        boardparticipant_user2_owner
+    client, logged_in_user, board, boardparticipant_user2_owner
 ):
     response = client.delete(URL.format(board.id))
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -50,10 +40,7 @@ def test_delete_forbidden_to_user_wo_rights(
 
 @pytest.mark.django_db
 def test_delete_forbidden_to_reader(
-        client,
-        logged_in_user,
-        board,
-        boardparticipant_user1_reader
+    client, logged_in_user, board, boardparticipant_user1_reader
 ):
     response = client.delete(URL.format(board.id))
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -61,10 +48,7 @@ def test_delete_forbidden_to_reader(
 
 @pytest.mark.django_db
 def test_delete_forbidden_to_writer(
-        client,
-        logged_in_user,
-        board,
-        boardparticipant_user1_writer
+    client, logged_in_user, board, boardparticipant_user1_writer
 ):
     response = client.delete(URL.format(board.id))
     assert response.status_code == HTTPStatus.FORBIDDEN

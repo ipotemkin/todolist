@@ -21,7 +21,7 @@ class MessageFrom(BaseModel):
 
 class Message(BaseModel):
     message_id: int
-    from_: MessageFrom = Field(alias='from')
+    from_: MessageFrom = Field(alias="from")
     chat: Chat
     # text: Optional[str] = None
     text: str

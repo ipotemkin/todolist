@@ -6,13 +6,9 @@ from goals.models import Goal
 
 
 @pytest.mark.django_db
-def test_delete_by_owner(
-        client,
-        logged_in_user,
-        goal_for_category
-):
+def test_delete_by_owner(client, logged_in_user, goal_for_category):
     goal = goal_for_category
-    url = f'/goals/goal/{goal.id}'
+    url = f"/goals/goal/{goal.id}"
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.NO_CONTENT
@@ -25,12 +21,9 @@ def test_delete_by_owner(
 
 
 @pytest.mark.django_db
-def test_delete_forbidden_to_unauthorized_user(
-        client,
-        goal_for_category_user2
-):
+def test_delete_forbidden_to_unauthorized_user(client, goal_for_category_user2):
     goal = goal_for_category_user2
-    url = f'/goals/goal/{goal.id}'
+    url = f"/goals/goal/{goal.id}"
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -38,12 +31,10 @@ def test_delete_forbidden_to_unauthorized_user(
 
 @pytest.mark.django_db
 def test_delete_forbidden_to_user_wo_rights(
-        client,
-        logged_in_user,
-        goal_for_category_user2
+    client, logged_in_user, goal_for_category_user2
 ):
     goal = goal_for_category_user2
-    url = f'/goals/goal/{goal.id}'
+    url = f"/goals/goal/{goal.id}"
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -51,12 +42,10 @@ def test_delete_forbidden_to_user_wo_rights(
 
 @pytest.mark.django_db
 def test_delete_forbidden_to_reader(
-        client,
-        logged_in_user,
-        goal_for_category_user2_user1_reader
+    client, logged_in_user, goal_for_category_user2_user1_reader
 ):
     goal = goal_for_category_user2_user1_reader
-    url = f'/goals/goal/{goal.id}'
+    url = f"/goals/goal/{goal.id}"
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -64,12 +53,10 @@ def test_delete_forbidden_to_reader(
 
 @pytest.mark.django_db
 def test_delete_allowed_to_writer(
-        client,
-        logged_in_user,
-        goal_for_category_user2_user1_writer
+    client, logged_in_user, goal_for_category_user2_user1_writer
 ):
     goal = goal_for_category_user2_user1_writer
-    url = f'/goals/goal/{goal.id}'
+    url = f"/goals/goal/{goal.id}"
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.NO_CONTENT
