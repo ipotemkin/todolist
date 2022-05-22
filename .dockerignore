@@ -20,3 +20,6 @@ todo.py
 backup
 .github
 swagger
+mypy.ini
+#docker-compose*.*
+.pre-commit-config.yaml
