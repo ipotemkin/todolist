@@ -21,6 +21,7 @@ repos:
     rev: v0.0.1a4
     hooks:
       - id: pyproject-flake8
+        exclude: "^.*/migrations/.*$"
         name: flake8
         description: 'A monkey patching wrapper to connect flake8 with pyproject.toml configuration'
         entry: pflake8
