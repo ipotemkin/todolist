@@ -16,13 +16,14 @@ repos:
 #    rev: 5.10.1
 #    hooks:
 #      - id: isort
-#  - repo: https://github.com/csachs/pyproject-flake8
-#    rev: v0.0.1a4
-#    hooks:
-#      - id: pyproject-flake8
-#        name: flake8
-#        description: 'A monkey patching wrapper to connect flake8 with pyproject.toml configuration'
-#        entry: pflake8
-#        language: python
-#        types: [ python ]
-#        require_serial: true
+
+  - repo: https://github.com/csachs/pyproject-flake8
+    rev: v0.0.1a4
+    hooks:
+      - id: pyproject-flake8
+        name: flake8
+        description: 'A monkey patching wrapper to connect flake8 with pyproject.toml configuration'
+        entry: pflake8
+        language: python
+        types: [ python ]
+        require_serial: true
