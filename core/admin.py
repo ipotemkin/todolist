@@ -13,26 +13,26 @@ class BoardAdmin(UserAdmin):
 
     # exclude = ('password',)
 
-    readonly_fields = ("date_joined", "last_login")
+    readonly_fields = ('date_joined', 'last_login')
     list_display = (
-        "username",
-        "email",
-        "first_name",
-        "last_name",
-        "role",
-        "last_login",
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        'role',
+        'last_login',
     )
-    list_filter = ("is_staff", "is_active", "is_superuser")
-    search_fields = ("username", "email", "first_name", "last_name")
+    list_filter = ('is_staff', 'is_active', 'is_superuser')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
     fieldsets = (
-        ("Логин и пароль", {"fields": ("username", "password")}),
-        ("Персональная информация", {"fields": ("first_name", "last_name", "email")}),
-        ("Права доступа", {"fields": ("role", "is_active")}),
-        (None, {"fields": ("date_joined", "last_login")}),
+        ('Логин и пароль', {'fields': ('username', 'password')}),
+        ('Персональная информация', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Права доступа', {'fields': ('role', 'is_active')}),
+        (None, {'fields': ('date_joined', 'last_login')}),
     )
     add_fieldsets = (
-        (None, {"fields": ("username", "password1", "password2")}),
-        ("Персональная информация", {"fields": ("first_name", "last_name", "email")}),
-        ("Права доступа", {"fields": ("role", "is_active")}),
+        (None, {'fields': ('username', 'password1', 'password2')}),
+        ('Персональная информация', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Права доступа', {'fields': ('role', 'is_active')}),
     )
     admin.site.unregister(BaseGroup)

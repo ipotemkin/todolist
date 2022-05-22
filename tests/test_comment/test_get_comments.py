@@ -4,7 +4,7 @@ import pytest
 
 from goals.serializers import CommentSerializer
 
-URL = "/goals/goal_comment/list"
+URL = '/goals/goal_comment/list'
 
 
 @pytest.mark.django_db

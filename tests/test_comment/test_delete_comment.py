@@ -2,10 +2,8 @@ from http import HTTPStatus
 
 import pytest
 
-from goals.models import Goal
 
-
-URL = "/goals/goal_comment/{}"
+URL = '/goals/goal_comment/{}'
 
 
 @pytest.mark.django_db

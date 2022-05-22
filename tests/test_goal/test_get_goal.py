@@ -14,7 +14,7 @@ def test_one_by_owner(
     goal = goal_for_category
     expected_response = GoalSerializer(goal).data
 
-    response = client.get(f"/goals/goal/{goal.id}")
+    response = client.get(f'/goals/goal/{goal.id}')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == expected_response
@@ -27,7 +27,7 @@ def test_get_one_forbidden_to_user_wo_rights(
         goal_for_category_user2
 ):
     goal = goal_for_category_user2
-    response = client.get(f"/goals/goal_category/{goal.id}")
+    response = client.get(f'/goals/goal_category/{goal.id}')
 
     assert response.status_code == HTTPStatus.NOT_FOUND
 
@@ -38,7 +38,7 @@ def test_get_one_forbidden_to_unauthorized_user(
         goal_for_category_user2
 ):
     goal = goal_for_category_user2
-    response = client.get(f"/goals/goal_category/{goal.id}")
+    response = client.get(f'/goals/goal_category/{goal.id}')
 
     assert response.status_code == HTTPStatus.FORBIDDEN
 
@@ -52,7 +52,7 @@ def test_get_one_allowed_to_reader(
     goal = goal_for_category_user2_user1_reader
     expected_response = GoalSerializer(goal).data
 
-    response = client.get(f"/goals/goal/{goal.id}")
+    response = client.get(f'/goals/goal/{goal.id}')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == expected_response
@@ -67,7 +67,7 @@ def test_get_one_allowed_to_writer(
     goal = goal_for_category_user2_user1_writer
     expected_response = GoalSerializer(goal).data
 
-    response = client.get(f"/goals/goal/{goal.id}")
+    response = client.get(f'/goals/goal/{goal.id}')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == expected_response
@@ -75,6 +75,6 @@ def test_get_one_allowed_to_writer(
 
 @pytest.mark.django_db
 def test_not_found(client, logged_in_user):
-    response = client.get("/goals/goal/1000")
+    response = client.get('/goals/goal/1000')
 
     assert response.status_code == HTTPStatus.NOT_FOUND

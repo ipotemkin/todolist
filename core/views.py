@@ -22,7 +22,7 @@ from core.serializers import (
 
 def login_model_backend(request, user) -> None:
     login(
-        request=request, user=user, backend="django.contrib.auth.backends.ModelBackend"
+        request=request, user=user, backend='django.contrib.auth.backends.ModelBackend'
     )
 
 
@@ -35,7 +35,7 @@ class SignupView(CreateAPIView):
         ret = super().post(request, *args, **kwargs)
 
         # to log in the app; the front doesn't do it! ((
-        user = User.objects.get(username=ret.data["username"])
+        user = User.objects.get(username=ret.data['username'])
         login_model_backend(request, user=user)
 
         return ret
@@ -71,10 +71,10 @@ class ProfileView(RetrieveUpdateDestroyAPIView, UserMixin):
 class LogoutView(GenericAPIView):
     serializer_class = UserSerializer
 
-    @swagger_auto_schema(responses={200: ""})
+    @swagger_auto_schema(responses={200: ''})
     def get(self, request, *args, **kwargs):
         logout(request)
-        return Response({"message": "user logged out"}, status=200)
+        return Response({'message': 'user logged out'}, status=200)
 
 
 class UpdatePasswordView(UpdateAPIView, UserMixin):

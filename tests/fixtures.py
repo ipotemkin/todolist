@@ -2,16 +2,16 @@ import pytest
 
 from goals.models import Board, BoardParticipant, GoalCategory, Goal, Comment
 
-TEST_USERNAME = "james"
-TEST_USERNAME_2 = "user2"
-USER_PASSWORD = "qwerty123"
-CATEGORY_NAME = "Testing category name"
-CATEGORY_NAME_2 = "Testing category name 2"
-GOAL_NAME = "Testing goal name"
-GOAL_NAME_2 = "Testing goal name 2"
-DUE_DATE = "2022-07-01"
-COMMENT_TEXT = "Testing comment"
-COMMENT_TEXT_2 = "Testing comment 2"
+TEST_USERNAME = 'james'
+TEST_USERNAME_2 = 'user2'
+USER_PASSWORD = 'qwerty123'
+CATEGORY_NAME = 'Testing category name'
+CATEGORY_NAME_2 = 'Testing category name 2'
+GOAL_NAME = 'Testing goal name'
+GOAL_NAME_2 = 'Testing goal name 2'
+DUE_DATE = '2022-07-01'
+COMMENT_TEXT = 'Testing comment'
+COMMENT_TEXT_2 = 'Testing comment 2'
 
 
 @pytest.fixture()
@@ -49,14 +49,14 @@ def logged_in_user2(client, user2):
 @pytest.fixture()
 @pytest.mark.django_db
 def board(client):
-    board_name = "Testing board name"
+    board_name = 'Testing board name'
     return Board.objects.create(title=board_name)
 
 
 @pytest.fixture()
 @pytest.mark.django_db
 def board2(client):
-    board_name = "Testing board name 2"
+    board_name = 'Testing board name 2'
     return Board.objects.create(title=board_name)
 
 

@@ -17,7 +17,7 @@ def test_get_all_by_owner(
         GoalSerializer(goal_1).data,
         GoalSerializer(goal_2).data,
     ]
-    response = client.get("/goals/goal/list")
+    response = client.get('/goals/goal/list')
 
     assert response.status_code == HTTPStatus.OK
     assert sorted(response.json(), key=lambda x: x['id']) == expected_response
@@ -29,7 +29,7 @@ def test_get_all_forbidden_to_user_wo_rights(
         logged_in_user,
         goals_for_category_user2
 ):
-    response = client.get("/goals/goal/list")
+    response = client.get('/goals/goal/list')
 
     assert response.status_code == HTTPStatus.OK
     assert response.json() == []
@@ -41,7 +41,7 @@ def test_get_all_forbidden_to_unauthorized_user(
         user2,
         goals_for_category_user2
 ):
-    response = client.get("/goals/goal/list")
+    response = client.get('/goals/goal/list')
 
     assert response.status_code == HTTPStatus.FORBIDDEN
 
@@ -58,7 +58,7 @@ def test_get_all_allowed_to_reader(
         GoalSerializer(goal_1).data,
         GoalSerializer(goal_2).data,
     ]
-    response = client.get("/goals/goal/list")
+    response = client.get('/goals/goal/list')
 
     assert response.status_code == HTTPStatus.OK
     assert sorted(response.json(), key=lambda x: x['id']) == expected_response
@@ -76,7 +76,7 @@ def test_get_all_allowed_to_writer(
         GoalSerializer(goal_1).data,
         GoalSerializer(goal_2).data,
     ]
-    response = client.get("/goals/goal/list")
+    response = client.get('/goals/goal/list')
 
     assert response.status_code == HTTPStatus.OK
     assert sorted(response.json(), key=lambda x: x['id']) == expected_response

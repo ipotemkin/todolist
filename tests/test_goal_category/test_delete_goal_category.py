@@ -12,7 +12,7 @@ def test_delete_by_owner(
         category_for_user1
 ):
     category = category_for_user1
-    url = f"/goals/goal_category/{category.id}"
+    url = f'/goals/goal_category/{category.id}'
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.NO_CONTENT
@@ -31,7 +31,7 @@ def test_delete_forbidden_to_unauthorized_user(
         category_for_user2
 ):
     category = category_for_user2
-    url = f"/goals/goal_category/{category.id}"
+    url = f'/goals/goal_category/{category.id}'
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -45,7 +45,7 @@ def test_delete_forbidden_to_user_wo_rights(
         category_for_user2
 ):
     category = category_for_user2
-    url = f"/goals/goal_category/{category.id}"
+    url = f'/goals/goal_category/{category.id}'
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.NOT_FOUND
@@ -59,7 +59,7 @@ def test_delete_forbidden_to_reader(
         category_for_board_user2_user1_reader
 ):
     category = category_for_board_user2_user1_reader
-    url = f"/goals/goal_category/{category.id}"
+    url = f'/goals/goal_category/{category.id}'
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -73,7 +73,7 @@ def test_delete_allowed_to_writer(
         category_for_board_user2_user1_writer
 ):
     category = category_for_board_user2_user1_writer
-    url = f"/goals/goal_category/{category.id}"
+    url = f'/goals/goal_category/{category.id}'
 
     response = client.delete(url)
     assert response.status_code == HTTPStatus.NO_CONTENT

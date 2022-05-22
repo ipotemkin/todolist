@@ -7,20 +7,20 @@ from goals.models import Board, BoardParticipant
 
 @pytest.mark.django_db
 def test_create_by_owner(client, logged_in_user):
-    category_name = "Testing category name"
-    board_name = "Testing board name"
+    category_name = 'Testing category name'
+    board_name = 'Testing board name'
     board = Board.objects.create(title=board_name)
     BoardParticipant.objects.create(board=board, user=logged_in_user)
 
     data = {
-        "title": category_name,
-        "board": board.id
+        'title': category_name,
+        'board': board.id
     }
 
     response = client.post(
-        f"/goals/goal_category/create",
+        '/goals/goal_category/create',
         data,
-        content_type="application/json"
+        content_type='application/json'
     )
 
     assert response.status_code == HTTPStatus.CREATED
@@ -32,17 +32,17 @@ def test_create_forbidden_to_unauthorized_user(
         user2,
         board,
 ):
-    category_name = "Testing category name"
+    category_name = 'Testing category name'
 
     data = {
-        "title": category_name,
-        "board": board.id
+        'title': category_name,
+        'board': board.id
     }
 
     response = client.post(
-        f"/goals/goal_category/create",
+        '/goals/goal_category/create',
         data,
-        content_type="application/json"
+        content_type='application/json'
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -55,17 +55,17 @@ def test_create_forbidden_to_user_wo_rights(
         user2,
         board,
 ):
-    category_name = "Testing category name"
+    category_name = 'Testing category name'
 
     data = {
-        "title": category_name,
-        "board": board.id
+        'title': category_name,
+        'board': board.id
     }
 
     response = client.post(
-        f"/goals/goal_category/create",
+        '/goals/goal_category/create',
         data,
-        content_type="application/json"
+        content_type='application/json'
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -79,17 +79,17 @@ def test_create_forbidden_to_reader(
         board,
         category_for_board_user2_user1_reader
 ):
-    category_name = "Testing category name"
+    category_name = 'Testing category name'
 
     data = {
-        "title": category_name,
-        "board": board.id
+        'title': category_name,
+        'board': board.id
     }
 
     response = client.post(
-        f"/goals/goal_category/create",
+        '/goals/goal_category/create',
         data,
-        content_type="application/json"
+        content_type='application/json'
     )
 
     assert response.status_code == HTTPStatus.FORBIDDEN
@@ -103,17 +103,17 @@ def test_create_allowed_to_writer(
         board,
         category_for_board_user2_user1_writer
 ):
-    category_name = "Testing category name"
+    category_name = 'Testing category name'
 
     data = {
-        "title": category_name,
-        "board": board.id
+        'title': category_name,
+        'board': board.id
     }
 
     response = client.post(
-        f"/goals/goal_category/create",
+        '/goals/goal_category/create',
         data,
-        content_type="application/json"
+        content_type='application/json'
     )
 
     assert response.status_code == HTTPStatus.CREATED

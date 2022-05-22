@@ -4,29 +4,29 @@ import pytest
 
 from goals.serializers import CommentSerializer
 
-UPDATED_COMMENT = "Updated comment"
+UPDATED_COMMENT = 'Updated comment'
 
 
 def get_patch_response(client, comment):
     return client.patch(
-        f"/goals/goal_comment/{comment.id}",
-        {"text": UPDATED_COMMENT},
-        content_type="application/json"
+        f'/goals/goal_comment/{comment.id}',
+        {'text': UPDATED_COMMENT},
+        content_type='application/json'
     )
 
 
 @pytest.mark.django_db
 def test_partial_update_by_owner(client, logged_in_user, comment):
     expected_response = CommentSerializer(comment).data
-    expected_response["text"] = UPDATED_COMMENT
+    expected_response['text'] = UPDATED_COMMENT
 
     response = get_patch_response(client, comment)
 
     assert response.status_code == HTTPStatus.OK
 
     response_json = response.json()
-    response_json.pop("updated")
-    expected_response.pop("updated")
+    response_json.pop('updated')
+    expected_response.pop('updated')
 
     assert response_json == expected_response
 
@@ -37,7 +37,7 @@ def test_partial_update_forbidden_to_unauthorized_user(
         comment
 ):
     expected_response = CommentSerializer(comment).data
-    expected_response["text"] = UPDATED_COMMENT
+    expected_response['text'] = UPDATED_COMMENT
 
     response = get_patch_response(client, comment)
 
@@ -76,13 +76,13 @@ def test_partial_update_allowed_to_writer(
     response = get_patch_response(client, comment)
 
     expected_response = CommentSerializer(comment).data
-    expected_response["text"] = UPDATED_COMMENT
+    expected_response['text'] = UPDATED_COMMENT
 
     assert response.status_code == HTTPStatus.OK
 
     response_json = response.json()
-    response_json.pop("updated")
-    expected_response.pop("updated")
+    response_json.pop('updated')
+    expected_response.pop('updated')
 
     assert response_json == expected_response
 

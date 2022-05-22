@@ -8,25 +8,25 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = factory.Faker("name")
+    username = factory.Faker('name')
     # password = "qwerty123"
 
     # username = "james"
-    password = "qwerty123"
+    password = 'qwerty123'
 
 
 class BoardFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Board
 
-    title = "Test board name"
+    title = 'Test board name'
 
 
 class GoalCategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = GoalCategory
 
-    title = "Testing category"
+    title = 'Testing category'
     # user = User.objects.create_user(username="james", password="qwerty123")
     user_id = 1
     # user = factory.SubFactory(UserFactory)

@@ -4,7 +4,7 @@ import pytest
 
 from goals.serializers import BoardListSerializer
 
-URL = "/goals/board/list"
+URL = '/goals/board/list'
 
 
 @pytest.mark.django_db

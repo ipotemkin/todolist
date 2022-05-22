@@ -5,10 +5,10 @@ from core.models import User
 
 class TgUser(models.Model):
     chat_id = models.PositiveBigIntegerField(
-        verbose_name="Telegram chat_id", unique=True
+        verbose_name='Telegram chat_id', unique=True
     )
     username = models.CharField(
-        verbose_name="Telegram user_ud",
+        verbose_name='Telegram user_ud',
         max_length=255,
         null=True,
         blank=True,
@@ -16,7 +16,7 @@ class TgUser(models.Model):
     )
     user = models.ForeignKey(
         User,
-        verbose_name="Пользователь todolist",
+        verbose_name='Пользователь todolist',
         on_delete=models.PROTECT,
         null=True,
         blank=True,
@@ -36,5 +36,5 @@ class TgUser(models.Model):
             return super().__str__()
 
     class Meta:
-        verbose_name = "Пользователь Телеграм"
-        verbose_name_plural = "Пользователи Телеграм"
+        verbose_name = 'Пользователь Телеграм'
+        verbose_name_plural = 'Пользователи Телеграм'

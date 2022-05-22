@@ -4,7 +4,7 @@ import pytest
 
 from goals.models import Board
 
-URL = "/goals/board/{}"
+URL = '/goals/board/{}'
 
 
 @pytest.mark.django_db

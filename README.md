@@ -19,7 +19,7 @@
 
 ## Запуск приложения
 
-1. Склонируйте репозиторий 
+1. Склонируйте репозиторий
 
 >git clone https://github.com/ipotemkin/todolist.git
 
