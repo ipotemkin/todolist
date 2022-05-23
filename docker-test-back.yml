@@ -10,7 +10,7 @@ x-common-variables: &common-variables
   SOCIAL_AUTH_VK_OAUTH2_KEY: 'testing-key'
   SOCIAL_AUTH_VK_OAUTH2_SECRET: 'testing-secret'
   NO_FRONT: 'TRUE'
-  BOT_TOKEN: ${BOT_TOKEN}
+  BOT_TOKEN: 'your-bot-token'
   REDIS_HOST: redis
 
 services:
