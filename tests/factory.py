@@ -1,7 +1,12 @@
 import factory.django
 
+from faker import Faker
+
 from core.models import User
 from goals.models import GoalCategory, Board
+
+
+fake = Faker()
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -19,7 +24,8 @@ class BoardFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Board
 
-    title = "Test board name"
+    # title = "Test board name"
+    title = factory.Faker("name")
 
 
 class GoalCategoryFactory(factory.django.DjangoModelFactory):
